@@ -1,6 +1,9 @@
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
+
 username = "YOUR_CS_USERNAME"
 password = "YOUR_CS_PASSWORD"
 dbName = "YOUR_DB_NAME"
