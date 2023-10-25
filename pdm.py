@@ -1,18 +1,17 @@
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
-from dotenv import load_dotenv
-load_dotenv()  # take environment variables from .env.
+import sensitive
 
-username = "YOUR_CS_USERNAME"
-password = "YOUR_CS_PASSWORD"
-dbName = "YOUR_DB_NAME"
+username = sensitive.get_user()
+password = sensitive.get_pass()
+dbName = "p320_14"
 
 try:
     with SSHTunnelForwarder(('starbug.cs.rit.edu', 22),
                             ssh_username=username,
                             ssh_password=password,
-                            remote_bind_address=('localhost', 5432)) as server:
+                            remote_bind_address=('127.0.0.1', 5432)) as server:
         server.start()
         print("SSH tunnel established")
         params = {
