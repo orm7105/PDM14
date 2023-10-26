@@ -55,9 +55,9 @@ try:
                 command = input()
                 command = command.strip().split()
                 song_name = ' '.join(map(str, command[1:]))
-                if command == "add songname":
-                        # TODO: add song
-                elif command == "add album":
+                #if command == "add songname":
+
+                if command == "add album":
                     # TODO: add entire albums
 
                     # get songid
