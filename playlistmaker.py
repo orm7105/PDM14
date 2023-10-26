@@ -50,12 +50,14 @@ try:
             command = ""
             while command != "done":
                 print(
-                    "type 'add (songname/album)' or 'add (songname/album)' build your "
+                    "type 'add songname' or 'add album' build your "
                     "playlist. type 'done' to save playlist")
                 command = input()
                 command = command.strip().split()
                 song_name = ' '.join(map(str, command[1:]))
-                if command[0] == "add":
+                if command == "add songname":
+                        # TODO: add song
+                elif command == "add album":
                     # TODO: add entire albums
 
                     # get songid
