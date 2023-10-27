@@ -4,7 +4,7 @@ import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
 import sensitive
-import program_vars
+#import program_vars
 
 username = sensitive.get_user()
 password = sensitive.get_pass()
@@ -32,35 +32,24 @@ try:
         try:
             print("Welcome to the homepage")
 
-            user_id = program_vars.USER_ID  # replace with actuasl user ID
-            curs.execute("SELECT userid FROM listeners_listensto_playlist"
-                         "where userid = %s", (user_id,))
-            #if user_id in listeners_listento_playlist:
+            user_id = 1093632 #replace with userid
 
-            curs.execute("SELECT playlist_name FROM playlists "
-                         "WHERE userid = %s "
-                         "ORDER BY playlist_name ASC", (user_id,))
-            playlists = curs.fetchall()
+            query = "SELECT name, COUNT(songid) AS num_songs, SUM(duration)" \
+                    "AS total_duration FROM playlist" \
+                    "JOIN playlist_hasa_song ON playlist_hasa_song.songid = song.songid" \
+                    "WHERE user_is = %s" \
+                    "GROUP BY name" \
+                    "ORDER BY name ASC"
 
-            if playlists:
-                print("This is a list of all your playlists by name in ascending order:")
-                for playlist in playlists:
-                    print(playlist[0])
-            else:
-                print("You haven't created any playlists yet.")
+            curs.execute(query, (user_id,))
 
-            playlist_id = 1  # replace with actual playlist ID
+            playlist = curs.fetchall()
 
-            curs.execute("SELECT quantity, "
-                         "length FROM PLAYLIST WHERE playlist_id = %s", (playlist_id,))
-
-            result = curs.fetchone(0)
-
-            # get user had playlist function to check if the user even has a playlist
-            if result:
-                print("This is the number of song in your playlist: ", result)
-            else:
-                print("You haven't added any songs yet.")
+            for playlist in playlist:
+                name, num_songs, total_duration = playlist
+                print(f"Playlist Name: {name}")
+                print(f"Number of Songs in Playlist: {num_songs}")
+                print(f"Total Duration in Minutes: {total_duration} minutes")
 
             # Collections and their names if user is existing
             # must show playlist name, num songs in playlist, length of playlist
