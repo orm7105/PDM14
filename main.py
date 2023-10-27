@@ -7,6 +7,8 @@ if __name__ == "__main__":
 
     # run home page
 
+    subprocess.run([sys.executable, 'playlistmaker.py'])
+
 
 
 

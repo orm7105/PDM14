@@ -4,6 +4,7 @@ import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
 import sensitive
+import landing
 
 username = sensitive.get_user()
 password = sensitive.get_pass()
@@ -154,10 +155,11 @@ try:
                         p_duration -= songlength
 
                 # print playlist so far
-                print(p_name + "\n" + str(p_duration) + "\n" + str(
-                    p_quantity) + "\n")
+                print()
+                print(p_name + " | " + str(round(p_duration, 2)) + " mins | " +
+                                           str(p_quantity) + " song(s)")
                 print("___________________________")
-                print_query = """
+                print_query = """ 
                     SELECT name, artist FROM SONG
                     WHERE songid IN ( 
                         SELECT songid FROM playlist_has_song
@@ -171,12 +173,20 @@ try:
 
                 # update duration and quantity of playlist
                 update_playlist_q = "UPDATE playlist " \
-                                    "SET duration = %s" \
-                                    "SET quantity = %s" \
-                                    "WHERE playlist_id = %s"
+                                    "SET duration = %s, " \
+                                    "quantity = %s " \
+                                    "WHERE playlistid = %s"
                 vals = (p_duration, p_quantity, p_id)
+                curs.execute(update_playlist_q, vals)
 
-            # TODO: build user has playlist relation
+            # build user has playlist relation
+            user_id = landing.get_uid()
+            user_query = "INSERT INTO listeners_listensto_playlist(userid," \
+                         "playlistid) VALUES (%s, %s)"
+            vals = (user_id, p_id)
+            curs.execute(user_query, vals)
+            conn.commit()
+
 
         except Exception as e:
             print("db edits failed")
