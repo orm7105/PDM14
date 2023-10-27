@@ -4,6 +4,7 @@ import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
 import sensitive
+#import program_vars
 
 username = sensitive.get_user()
 password = sensitive.get_pass()
@@ -46,8 +47,8 @@ try:
 
             for playlist in playlist:
                 name, num_songs, total_duration = playlist
-                print(f"Collection Name: {name}")
-                print(f"Number of Songs in Collection: {num_songs}")
+                print(f"Playlist Name: {name}")
+                print(f"Number of Songs in Playlist: {num_songs}")
                 print(f"Total Duration in Minutes: {total_duration} minutes")
 
             # Collections and their names if user is existing
