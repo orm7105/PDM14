@@ -89,6 +89,7 @@ try:
                 # TODO: update duration and quantity of playlist
 
             # TODO: build user has playlist relation
+            # jenny needed to commit so she made a comment sry :P
 
         except Exception as e:
             print("db edits failed")
