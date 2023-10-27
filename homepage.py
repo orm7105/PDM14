@@ -84,6 +84,7 @@ try:
                     subprocess.run([sys.executable, 'search_page.py'])
                 # elif command == "search":
                 #     subprocess.run([sys.executable, 'playlist_editor.py'])
+
         except Exception as e:  # debugging purposes
             print("user db changes failed.")
             print(e)
