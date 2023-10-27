@@ -64,11 +64,12 @@ try:
 
             command = ""
             while True:
+                print("\n\n\nWelcome to the Homepage!")
                 print("commands:\n"
                       "\t make playlist >\n"
                       "\t search >\n"
                       "\t edit playlists >\n"
-                      "\t edit following >" 
+                      "\t edit following >\n" 
                       "\t exit >\n")
 
                 command = input(">")
