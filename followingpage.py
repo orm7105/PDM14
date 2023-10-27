@@ -41,7 +41,7 @@ def unfollow_user(curs, user_id):
         target_user_id = result[0]
 
         # Remove the relation "user follows user" to unfollow the target user
-        unfollow_query = "DELETE FROM listener_follows_user WHERE follower_id = %s AND following_id = %s;"
+        unfollow_query = "DELETE FROM listeners_follows_user WHERE followerid = %s AND followingid = %s;"
         curs.execute(unfollow_query, (user_id, target_user_id))
 
         conn.commit()

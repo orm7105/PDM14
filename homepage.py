@@ -34,11 +34,10 @@ try:
 
             user_id = program_vars.USER_ID
 
-            query = "SELECT name, COUNT(playlist_has_song.songid) AS num_songs, SUM(song.duration) " \
-                    "AS total_duration " \
+            query = "SELECT name, quantity, duration " \
                     "FROM playlist " \
-                    "JOIN playlist_has_song ON playlist_has_song.songid = song.songid " \
-                    "WHERE user_is = %s " \
+                    "SELECT playlistid FROM listeners_listensto_playlist " \
+                    "WHERE user_id = %s " \
                     "GROUP BY name " \
                     "ORDER BY name ASC " \
 
@@ -48,10 +47,10 @@ try:
             playlist = curs.fetchall()
 
             for playlist in playlist:
-                name, num_songs, total_duration = playlist
+                name, quantity, duration = playlist
                 print(f"Playlist Name: {name}")
-                print(f"Number of Songs in Playlist: {num_songs}")
-                print(f"Total Duration in Minutes: {total_duration} minutes")
+                print(f"Number of Songs in Playlist: {quantity}")
+                print(f"Total Duration in Minutes: {duration} minutes")
 
             # Collections and their names if user is existing
             # must show playlist name, num songs in playlist, length of playlist
