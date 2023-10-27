@@ -10,11 +10,6 @@ username = sensitive.get_user()
 password = sensitive.get_pass()
 dbName = "p320_14"
 
-class uid() :
-    user_id = None
-def get_uid() :
-    return user_id
-
 
 if __name__ == '__main__':
     try:
@@ -46,7 +41,10 @@ if __name__ == '__main__':
                 if existing_user == 'n':
                     first_name = input("First name: ")
                     last_name = input("Last name: ")
+
                     user_id = random.randint(1000000, 9999999)
+                    with open('program_vars.py', 'a') as file:
+                        file.write("USER_ID = " + str(user_id) + "\n")
 
                     query = "INSERT INTO listeners(userid, email, password, " \
                             "firstname, lastname, creationdate, lastaccessdate) " \
@@ -72,6 +70,8 @@ if __name__ == '__main__':
                     curs.execute("SELECT userid FROM listeners WHERE email = "
                             "%s", (u_email,))
                     user_id = curs.fetchone()[0]
+                    with open('program_vars.py', 'a') as file:
+                        file.write("USER_ID = " + str(user_id) + "\n")
 
 
             except Exception as e:  # debugging purposes

@@ -3,6 +3,7 @@ import random
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
+import program_vars
 import sensitive
 import landing
 
@@ -180,7 +181,7 @@ try:
                 curs.execute(update_playlist_q, vals)
 
             # build user has playlist relation
-            user_id = landing.get_uid()
+            user_id = program_vars.USER_ID
             user_query = "INSERT INTO listeners_listensto_playlist(userid," \
                          "playlistid) VALUES (%s, %s)"
             vals = (user_id, p_id)

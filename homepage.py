@@ -4,6 +4,7 @@ import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
 import sensitive
+import program_vars
 
 username = sensitive.get_user()
 password = sensitive.get_pass()
@@ -31,7 +32,7 @@ try:
         try:
             print("Welcome to the homepage")
 
-            user_id = 1  # replace with actuasl user ID
+            user_id = program_vars.USER_ID  # replace with actuasl user ID
             curs.execute("SELECT userid FROM listeners_listensto_playlist"
                          "where userid = %s", (user_id,))
             #if user_id in listeners_listento_playlist:
