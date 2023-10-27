@@ -34,11 +34,11 @@ try:
 
             user_id = 1093632 #replace with userid
 
-            query = "SELECT name, COUNT(songid) AS num_songs, SUM(duration)" \
-                    "AS total_duration FROM playlist" \
-                    "JOIN playlist_hasa_song ON playlist_hasa_song.songid = song.songid" \
-                    "WHERE user_is = %s" \
-                    "GROUP BY name" \
+            query = "SELECT name, COUNT(songid) AS num_songs, SUM(duration) " \
+                    "AS total_duration FROM playlist " \
+                    "JOIN playlist_hasa_song ON playlist_hasa_song.songid = song.songid " \
+                    "WHERE user_is = %s " \
+                    "GROUP BY name " \
                     "ORDER BY name ASC"
 
             curs.execute(query, (user_id,))
