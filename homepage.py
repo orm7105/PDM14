@@ -65,5 +65,6 @@ try:
         conn.commit()
 
         conn.close()
+
 except:
     print("Connection failed")
