@@ -2,7 +2,7 @@ import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
 import sensitive
-#import program_vars
+import program_vars
 
 username = sensitive.get_user()
 password = sensitive.get_pass()
@@ -12,7 +12,7 @@ dbName = "p320_14"
 def follow_user(curs, user_id):
     user_email = input("To follow another user input their email: ")
 
-    search_query = "SELECT userid FROM listeners WHERE email = %s;"
+    search_query = "SELECT userid FROM listeners WHERE email = %s"
     curs.execute(search_query, (user_email,))
     result = curs.fetchone()
 
@@ -20,7 +20,7 @@ def follow_user(curs, user_id):
         target_user_id = result[0]
 
         # Create a relation "user follows user" to make the current user follow the target user
-        follow_query = "INSERT INTO listener_follows_user (follower_id, following_id) VALUES (%s, %s);"
+        follow_query = "INSERT INTO listener_follows_user (follower_id, following_id) VALUES (%s, %s)"
         curs.execute(follow_query, (user_id, target_user_id))
 
         conn.commit()
@@ -72,7 +72,7 @@ try:
 
         # DB work here....
         try:
-            user_id =1   # get user's real id
+            user_id =program_vars.USER_ID   # get user's real id
             action = input("Do you want to (F)ollow or (U)nfollow a user? ").upper()
 
             if action == 'F':
