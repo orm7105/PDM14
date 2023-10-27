@@ -33,21 +33,34 @@ try:
             print("Welcome to the homepage")
 
             user_id = program_vars.USER_ID
+            action = input("Would you like some info about your playlist (Y/N)?: ").upper()
+            if action == 'Y':
 
-            query = "SELECT name, quantity, duration FROM playlist " \
-                    "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
-                    "WHERE userid = %s)"
+                print("Here is some information about the playlist you have:")
 
-            curs.execute(query, (user_id,))
+                query = "SELECT name, quantity, duration FROM playlist " \
+                        "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
+                        "WHERE userid = %s)"
 
-            playlist = curs.fetchall()
+                curs.execute(query, (user_id,))
 
-            for playlist in playlist:
-                name, quantity, duration = playlist
-                print(f"Playlist Name: {name}")
-                print(f"Number of Songs in Playlist: {quantity}")
-                print(f"Total Duration in Minutes: {duration} minutes")
+                playlist = curs.fetchall()
 
+                if playlist is None:
+                    print("You have no playlists")
+
+                for playlist in playlist:
+                    name, quantity, duration = playlist
+                    print(f"Playlist Name: {name}")
+                    print(f"Number of Songs in Playlist: {quantity}")
+                    print(f"Total Duration in Minutes: {duration} minutes")
+
+
+            else:
+                print("Ok!")
+                conn.commit()
+
+                conn.close()
             # Collections and their names if user is existing
             # must show playlist name, num songs in playlist, length of playlist
 
