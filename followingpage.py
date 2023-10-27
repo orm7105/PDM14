@@ -20,7 +20,8 @@ def follow_user(curs, user_id):
         target_user_id = result[0]
 
         # Create a relation "user follows user" to make the current user follow the target user
-        follow_query = "INSERT INTO listener_follows_user (follower_id, following_id) VALUES (%s, %s)"
+        follow_query = "INSERT INTO listeners_follows_user (follower_id, " \
+                       "following_id) VALUES (%s, %s)"
         curs.execute(follow_query, (user_id, target_user_id))
 
         conn.commit()

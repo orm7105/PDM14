@@ -36,21 +36,20 @@ try:
 
             query = "SELECT name, quantity, duration " \
                     "FROM playlist " \
-                    "SELECT playlistid FROM listeners_listensto_playlist " \
+                    "SELECT playlistid FROM playlist_has_song " \
                     "WHERE user_id = %s " \
                     "GROUP BY name " \
-                    "ORDER BY name ASC " \
-
+                    "ORDER BY name ASC "
 
             curs.execute(query, (user_id,))
 
             playlist = curs.fetchall()
 
             for playlist in playlist:
-                name, quantity, duration = playlist
+                name, num_songs, total_duration = playlist
                 print(f"Playlist Name: {name}")
-                print(f"Number of Songs in Playlist: {quantity}")
-                print(f"Total Duration in Minutes: {duration} minutes")
+                print(f"Number of Songs in Playlist: {num_songs}")
+                print(f"Total Duration in Minutes: {total_duration} minutes")
 
             # Collections and their names if user is existing
             # must show playlist name, num songs in playlist, length of playlist
@@ -65,6 +64,5 @@ try:
         conn.commit()
 
         conn.close()
-
 except:
     print("Connection failed")
