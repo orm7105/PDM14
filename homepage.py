@@ -1,4 +1,6 @@
 import random
+import subprocess
+import sys
 
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
@@ -30,35 +32,58 @@ try:
         print("Database connection established")
 
         try:
-            print("Welcome to the homepage")
+            print("Welcome to the homepage\n")
 
-            user_id = program_vars.USER_ID
+            command = ""
+            while True:
+                user_id = program_vars.USER_ID
 
-            query = "SELECT name, COUNT(playlist_has_song.songid) AS num_songs, SUM(song.duration) " \
-                    "AS total_duration " \
-                    "FROM playlist " \
-                    "JOIN playlist_has_song ON playlist_has_song.songid = song.songid " \
-                    "WHERE user_is = %s " \
-                    "GROUP BY name " \
-                    "ORDER BY name ASC " \
+                query = "SELECT name, COUNT(playlist_has_song.songid) AS num_songs, SUM(song.duration) " \
+                        "AS total_duration " \
+                        "FROM playlist " \
+                        "JOIN playlist_has_song ON playlist_has_song.songid = song.songid " \
+                        "WHERE user_is = %s " \
+                        "GROUP BY name " \
+                        "ORDER BY name ASC " \
 
 
-            curs.execute(query, (user_id,))
+                curs.execute(query, (user_id,))
 
-            playlist = curs.fetchall()
+                playlist = curs.fetchall()
 
-            for playlist in playlist:
-                name, num_songs, total_duration = playlist
-                print(f"Playlist Name: {name}")
-                print(f"Number of Songs in Playlist: {num_songs}")
-                print(f"Total Duration in Minutes: {total_duration} minutes")
+                for playlist in playlist:
+                    name, num_songs, total_duration = playlist
+                    print(f"Playlist Name: {name}")
+                    print(f"Number of Songs in Playlist: {num_songs}")
+                    print(f"Total Duration in Minutes: {total_duration} minutes")
 
-            # Collections and their names if user is existing
-            # must show playlist name, num songs in playlist, length of playlist
+                # Collections and their names if user is existing
+                # must show playlist name, num songs in playlist, length of playlist
 
-            # Top artists
-            # Users following
-            # Link to create playlist
+
+
+                # Top artists
+                # Users following
+                # Link to create playlist
+
+                print("commands:\n"
+                      "\t make playlist >\n"
+                      "\t search >\n"
+                      "\t edit playlists >\n" \
+                      "\t exit >\n")
+
+                command = input(">")
+                if command == "exit":
+                    break
+
+                command = command.strip().split()
+
+                if command == "make playlist":
+                    subprocess.run([sys.executable, 'playlistmaker.py'])
+                elif command == "search":
+                    subprocess.run([sys.executable, 'search_page.py'])
+                # elif command == "search":
+                #     subprocess.run([sys.executable, 'playlist_editor.py'])
         except Exception as e:  # debugging purposes
             print("user db changes failed.")
             print(e)
