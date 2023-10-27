@@ -106,6 +106,7 @@ try:
                 vals = (p_duration, p_quantity, p_id)
 
             # TODO: build user has playlist relation
+            # jenny needed to commit so she made a comment sry :P
 
         except Exception as e:
             print("db edits failed")
