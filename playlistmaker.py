@@ -119,9 +119,9 @@ try:
                         album_id = result[0]
                         album_length = result[1]
 
-                        del_query = "DELETE FROM playlist_has_song(%s, songid)" \
-                                    "WHERE songid = (" \
-                                    "SELECT songid FROM album-has-song" \
+                        del_query = "DELETE FROM playlist_has_song " \
+                                    "WHERE playlistid = %s and songid IN " \
+                                    "(SELECT songid FROM album_hasa_song " \
                                     "WHERE albumid = %s)"
                         vals = (p_id, album_id)
                         curs.execute(del_query, vals)
@@ -134,8 +134,8 @@ try:
                         curs.execute(count_query, (album_id,))
                         conn.commit()
 
-                        p_quantity += curs.fetchone()[0]
-                        p_duration += album_length
+                        p_quantity -= curs.fetchone()[0]
+                        p_duration -= album_length
 
                     elif command[1] == "song":
                         # get songid and duration

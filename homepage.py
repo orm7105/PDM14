@@ -4,7 +4,7 @@ import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
 import sensitive
-#import program_vars
+import program_vars
 
 username = sensitive.get_user()
 password = sensitive.get_pass()
@@ -32,7 +32,7 @@ try:
         try:
             print("Welcome to the homepage")
 
-            user_id = 1093632 #replace with userid
+            user_id = program_vars.USER_ID
 
             query = "SELECT name, COUNT(songid) AS num_songs, SUM(duration)" \
                     "AS total_duration FROM playlist" \
