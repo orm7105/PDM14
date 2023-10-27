@@ -7,6 +7,7 @@ if __name__ == "__main__":
 
     subprocess.run([sys.executable, 'homepage.py'])
 
+    subprocess.run([sys.executable, 'followingpage.py'])
 
 
     print("main finished")
