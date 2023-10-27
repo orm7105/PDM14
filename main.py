@@ -6,9 +6,7 @@ if __name__ == "__main__":
     subprocess.run([sys.executable, 'landing.py'])
 
     # run home page
-
-    subprocess.run([sys.executable, 'playlistmaker.py'])
-
+    subprocess.run([sys.executable, 'homepage.py'])
 
 
 
