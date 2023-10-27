@@ -3,8 +3,8 @@ import random
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
-import sensitive
 import program_vars
+import sensitive
 
 username = sensitive.get_user()
 password = sensitive.get_pass()
@@ -34,12 +34,14 @@ try:
 
             user_id = program_vars.USER_ID
 
-            query = "SELECT name, COUNT(songid) AS num_songs, SUM(duration)" \
-                    "AS total_duration FROM playlist" \
-                    "JOIN playlist_hasa_song ON playlist_hasa_song.songid = song.songid" \
-                    "WHERE user_is = %s" \
-                    "GROUP BY name" \
-                    "ORDER BY name ASC"
+            query = "SELECT name, COUNT(playlist_has_song.songid) AS num_songs, SUM(song.duration) " \
+                    "AS total_duration " \
+                    "FROM playlist " \
+                    "JOIN playlist_has_song ON playlist_has_song.songid = song.songid " \
+                    "WHERE user_is = %s " \
+                    "GROUP BY name " \
+                    "ORDER BY name ASC " \
+
 
             curs.execute(query, (user_id,))
 
