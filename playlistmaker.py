@@ -41,53 +41,98 @@ try:
             p_quantity = 0
 
             # insert playlist into the table w/ basic info
-            query = "INSERT INTO playlist(playlistid, name, duration, quantity, " \
+            query = "INSERT INTO playlist(playlistid, name, duration, " \
+                    "quantity, " \
                     "isprivate) VALUES (%s, %s, %s, %s, %s)"
-            vals = (p_id, p_name, None, None, p_privacy)
+            vals = (p_id, p_name, 0, 0, p_privacy)
 
             curs.execute(query, vals)
 
             command = ""
-            while command != "done":
+            while True:
                 print(
-                    "type 'add (songname/album)' or 'add (songname/album)' build your "
-                    "playlist. type 'done' to save playlist")
-                command = input()
+                    "commands:\n"
+                    "\t add (pick one: song/album) {name}\n"
+                    "\t delete (pick one: song/album) {name}\n"
+                    "\t done\n")
+                command = input(">")
+                if command == "done":
+                    break
                 command = command.strip().split()
-                song_name = ' '.join(map(str, command[1:]))
-
-                # get songid and duplicate
-                curs.execute("SELECT songid, duration FROM SONG WHERE title = "
-                             "%s",
-                             (song_name,))
-                songid = curs.fetchone()[0]
-                songdur = curs.fetchone()[1]
+                name = ' '.join(map(str, command[2:]))
 
                 if command[0] == "add":
-                    # TODO: add entire albums
+                    if command[1] == "album":
+                        # get albumid and duration
+                        curs.execute(
+                            "SELECT albumid, length FROM ALBUM "
+                            "WHERE name = %s", (name,))
+                        result = curs.fetchone()
+                        album_id = result[0]
+                        album_length = result[1]
 
-                    add_query = "INSERT INTO playlist_has_song(playlistid, " \
-                                "songid) VALUES (%s, %s)"
-                    vals = (p_id, songid)
-                    curs.execute(add_query, vals)
-                    conn.commit()
-                    p_quantity += 1
-                    p_duration += songdur
+                        # insert new relation
+                        add_query = "INSERT INTO playlist_has_song(" \
+                                    "playlistid, songid) " \
+                                    "SELECT %s, songid FROM album_hasa_song " \
+                                    "WHERE albumid = %s"
+                        vals = (p_id, album_id)
+                        curs.execute(add_query, vals)
+                        conn.commit()
 
-                if command[0] == "delete":
+                        # get num of songs in album
+                        count_query = "SELECT COUNT(albumid) " \
+                                      "FROM album_hasa_song " \
+                                      "WHERE albumid = %s"
+                        curs.execute(count_query, (album_id,))
+                        conn.commit()
+
+                        p_duration += album_length
+                        p_quantity += curs.fetchone()[0]
+
+                    elif command[1] == "song":
+                        # get songid and duration
+                        curs.execute(
+                            "SELECT songid, length FROM SONG WHERE name = "
+                            "%s",
+                            (name,))
+                        result = curs.fetchone()
+                        songid = result[0]
+                        songlength = result[1]
+
+                        add_query = "INSERT INTO playlist_has_song(playlistid, " \
+                                    "songid) VALUES (%s, %s)"
+                        vals = (p_id, songid)
+                        curs.execute(add_query, vals)
+                        conn.commit()
+                        p_quantity += 1
+                        p_duration += songlength
+                elif command[0] == "delete":
                     # TODO: delete entire albums
 
-                    add_query = "DELETE FROM playlist_has_song" \
+                    # get songid and duration
+                    curs.execute(
+                        "SELECT songid, length FROM SONG WHERE name = "
+                        "%s",
+                        (name,))
+                    result = curs.fetchone()
+                    songid = result[0]
+                    songlength = result[1]
+
+                    add_query = "DELETE FROM playlist_has_song " \
                                 "WHERE playlistid = %s AND songid = %s"
                     vals = (p_id, songid)
                     curs.execute(add_query, vals)
                     conn.commit()
                     p_quantity -= 1
-                    p_duration -= songdur
+                    p_duration -= songlength
 
                 # print playlist so far
+                print(p_name + "\n" + str(p_duration) + "\n" + str(
+                    p_quantity) + "\n")
+                print("___________________________")
                 print_query = """
-                    SELECT title, artist FROM SONG
+                    SELECT name, artist FROM SONG
                     WHERE songid IN ( 
                         SELECT songid FROM playlist_has_song
                         WHERE playlistid = %s

@@ -61,7 +61,7 @@ try:
                 vals = (current_date, u_email)
                 print(vals)
                 curs.execute(update_query, vals)
-        except Exception as e: #debugging purposes
+        except Exception as e:  # debugging purposes
             print("user db changes failed.")
             print(e)
 
