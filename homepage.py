@@ -34,9 +34,11 @@ try:
         try:
             print("\n\n\nWelcome to the Homepage!")
 
-            command = ""
-            while True:
-                user_id = program_vars.USER_ID
+            user_id = program_vars.USER_ID
+            action = input("Would you like some info about your playlist (Y/N)?: ").upper()
+            if action == 'Y':
+
+                print("Here is some information about the playlist you have:")
 
                 query = "SELECT name, quantity, duration FROM playlist " \
                         "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
@@ -46,17 +48,22 @@ try:
 
                 playlist = curs.fetchall()
 
+                if playlist is None:
+                    print("You have no playlists")
+
                 for playlist in playlist:
                     name, quantity, duration = playlist
                     print(f"Playlist Name: {name}")
                     print(f"Number of Songs in Playlist: {quantity}")
                     print(f"Total Duration in Minutes: {duration} minutes")
+            else:
+                print("Ok!")
+                conn.commit()
 
+                conn.close()
 
-                # Top artists
-                # Users following
-                # Link to create playlist
-
+            command = ""
+            while True:
                 print("commands:\n"
                       "\t make playlist >\n"
                       "\t search >\n"
@@ -77,9 +84,6 @@ try:
                 elif command == "edit following":
                     subprocess.run([sys.executable, 'followingpage.py'])
 
-
-                # elif command == "search":
-                #     subprocess.run([sys.executable, 'playlist_editor.py'])
         except Exception as e:  # debugging purposes
             print("user db changes failed.")
             print(e)
