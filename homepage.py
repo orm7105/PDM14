@@ -32,53 +32,54 @@ try:
         print("Database connection established")
 
         try:
-            print("Welcome to the homepage")
+            print("\n\n\nWelcome to the Homepage!")
 
-            # command = ""
-            # while True:
-            user_id = program_vars.USER_ID
+            command = ""
+            while True:
+                user_id = program_vars.USER_ID
 
-            query = "SELECT name, quantity, duration FROM playlist " \
-                    "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
-                    "WHERE userid = %s)"
+                query = "SELECT name, quantity, duration FROM playlist " \
+                        "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
+                        "WHERE userid = %s)"
 
-            curs.execute(query, (user_id,))
+                curs.execute(query, (user_id,))
 
-            playlist = curs.fetchall()
+                playlist = curs.fetchall()
 
-            for playlist in playlist:
-                name, quantity, duration = playlist
-                print(f"Playlist Name: {name}")
-                print(f"Number of Songs in Playlist: {quantity}")
-                print(f"Total Duration in Minutes: {duration} minutes")
-
-            # Collections and their names if user is existing
-            # must show playlist name, num songs in playlist, length of playlist
-
+                for playlist in playlist:
+                    name, quantity, duration = playlist
+                    print(f"Playlist Name: {name}")
+                    print(f"Number of Songs in Playlist: {quantity}")
+                    print(f"Total Duration in Minutes: {duration} minutes")
 
 
                 # Top artists
                 # Users following
                 # Link to create playlist
 
-                # print("commands:\n"
-                #       "\t make playlist >\n"
-                #       "\t search >\n"
-                #       "\t edit playlists >\n" \
-                #       "\t exit >\n")
-                #
-                # command = input(">")
-                # if command == "exit":
-                #     break
-                #
-                # command = command.strip().split()
-                #
-                # if command == "make playlist":
-                #     subprocess.run([sys.executable, 'playlistmaker.py'])
+                print("commands:\n"
+                      "\t make playlist >\n"
+                      "\t search >\n"
+                      "\t edit playlists >\n"
+                      "\t edit following >" 
+                      "\t exit >\n")
+
+                command = input(">")
+                if command == "exit":
+                    break
+
+                command = command.strip()
+
+                if command == "make playlist":
+                    subprocess.run([sys.executable, 'playlistmaker.py'])
+                elif command == "search":
+                    subprocess.run([sys.executable, 'search_page.py'])
+                elif command == "edit following":
+                    subprocess.run([sys.executable, 'followingpage.py'])
+
+
                 # elif command == "search":
-                #     subprocess.run([sys.executable, 'search_page.py'])
-                # # elif command == "search":
-                # #     subprocess.run([sys.executable, 'playlist_editor.py'])
+                #     subprocess.run([sys.executable, 'playlist_editor.py'])
         except Exception as e:  # debugging purposes
             print("user db changes failed.")
             print(e)
