@@ -26,7 +26,7 @@ try:
         curs = conn.cursor()
         print("Database connection established")
 
-        # TODO make the search results print in an order
+        # TODO Users can sort the resulting list by song name, artist’s name, genre and released year (ascending and descending)
         try:
             print("Search for a song!")
             search_select = " "
@@ -48,35 +48,55 @@ try:
                                 ORDER BY S.name ASC
                             """, (search_element,))
 
-                    result = curs.fetchone()
-                    # might need a for loop to loop through everything in results
-                    if result:
-                        songid = result[0]
-                        song_artist = result[1]
-                        song_length = result[2]
-                        album_name = result[3]
-                        print(f"Song Name: {search_element}, Artist: {song_artist}, Length: {song_length}, Album: {album_name}")
+                    results = curs.fetchall()  # Fetch all matching rows
+
+                    if results:
+                        for result in results:
+                            songid = result[0]
+                            song_artist = result[1]
+                            song_length = result[2]
+                            album_name = result[3]
+                            print(
+                                f"Song Name: {search_element}, Artist: {song_artist}, Length: {song_length}, Album: {album_name}")
                     else:
                         print("Song not found.")
 
-                if search_select[0] == "artist":
+                elif search_select[0] == "artist":
                     # searched the database for song by artist
-                    curs.execute("""
-                                SELECT A.artisid, S.name, S.artist, S.length, A.name AS album_name
-                                FROM ARTIST AS A
-                                LEFT JOIN album_hasa_song AS AH ON S.songid = AH.songid
-                                LEFT JOIN ALBUM AS A ON AH.albumid = A.albumid
-                                WHERE S.name = %s
-                                ORDER BY S.name ASC
-                            """, (search_element,))
-                    curs.execute("""
-                                SELECT S.songid, S.artist, S.length, A.name AS album_name
-                                FROM SONG AS S
-                                LEFT JOIN album_hasa_song AS AH ON S.songid = AH.songid
-                                LEFT JOIN ALBUM AS A ON AH.albumid = A.albumid
-                                WHERE S.name = %s
-                                ORDER BY S.name ASC
-                            """, (search_element,))
+                    curs.execute("SELECT artistid FROM ARTIST WHERE name = %s", (search_element,))
+                    result = curs.fetchone()
+
+                    if result:
+                        artistid = result[0]
+
+                        curs.execute("SELECT name, length FROM SONG WHERE artist = %s ORDER BY name ASC", (search_element,))
+                        songs = curs.fetchall()
+
+                        if songs:
+                            artist_name = search_element
+
+                            for song in songs:
+                                song_name = song[0]
+                                song_length = song[1]
+
+                                curs.execute("SELECT albumid FROM artist_releasesa_album WHERE artistid = %s",
+                                             (artistid,))
+                                result = curs.fetchone()
+
+                                if result:
+                                    albumid = result[0]
+
+                                    curs.execute("SELECT name FROM ALBUM WHERE albumid = %s", (albumid,))
+                                    result = curs.fetchone()
+
+                                    if result:
+                                        album_name = result[0]
+                                        print(
+                                            f"Song Name: {song_name}, Artist: {artist_name}, Length: {song_length}, Album: {album_name}")
+                        else:
+                            print("No songs found for the artist.")
+                    else:
+                        print("Artist not found.")
 
                 if search_select[0] == "album":
                     # searches the database for song by album
@@ -88,15 +108,6 @@ try:
                     print("exiting the search!")
                 else:
                     print("in`valid search option, try again")
-                # if checker:
-                #     print_query = """
-                #                         SELECT title, artist FROM SONG
-                #                         WHERE songid IN (
-                #                             SELECT songid FROM playlist_has_song
-                #                             WHERE playlistid = %s
-                #                         )
-                #                     """
-                #     curs.execute(print_query, (p_id,))
 
 
         except Exception as e:
