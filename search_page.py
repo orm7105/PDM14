@@ -98,7 +98,6 @@ try:
                 #                     """
                 #     curs.execute(print_query, (p_id,))
 
-#jhvgkvjhvb
 
         except Exception as e:
             print("db edits failed")
