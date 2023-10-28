@@ -39,6 +39,7 @@ try:
 
                 print("Here is some information about the playlist you have:")
 
+
                 query = "SELECT name, quantity, duration FROM playlist " \
                         "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
                         "WHERE userid = %s)"
