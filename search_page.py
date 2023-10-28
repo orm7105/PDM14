@@ -42,7 +42,7 @@ try:
 
 
 
-            #DOUBLE CHECK IT WORKS PLZ
+            #DOUBLE CHECK IT WORKS
                 checker = False
                 if search_select[0] == "name":
 
