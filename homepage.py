@@ -65,28 +65,7 @@ try:
                 conn.close()
             # Collections and their names if user is existing
             # must show playlist name, num songs in playlist, length of playlist
-            command = ""
-            while True:
-                print("\n\n\nWelcome to the Homepage!")
-                print("commands:\n"
-                      "\t make playlist >\n"
-                      "\t search >\n"
-                      "\t edit playlists >\n"
-                      "\t edit following >\n"
-                      "\t exit >\n")
 
-                command = input(">")
-                if command == "exit":
-                    break
-
-                command = command.strip()
-
-                if command == "make playlist":
-                    subprocess.run([sys.executable, 'playlistmaker.py'])
-                elif command == "search":
-                    subprocess.run([sys.executable, 'search_page.py'])
-                elif command == "edit following":
-                    subprocess.run([sys.executable, 'followingpage.py'])
 
             # Top artists
             # Users following
