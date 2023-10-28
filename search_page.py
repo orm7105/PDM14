@@ -35,6 +35,14 @@ try:
                 search_select = input()
                 search_select = search_select.strip().split()
                 search_element = ' '.join(map(str, search_select[1:]))  # what is being used to search
+                print("Sort Ascending or Descending: - ASC - DESC ")
+                sort = input()
+                user_order = sort.strip().split()
+                sort_order = user_order[0]
+
+
+
+
                 checker = False
                 if search_select[0] == "name":
 
@@ -101,9 +109,69 @@ try:
                 if search_select[0] == "album":
                     # searches the database for song by album
                     print("searches by album")
+                    curs.execute("""
+                                SELECT name, artist, length, releasedate
+                                FROM ALBUM
+                                WHERE Name = %s
+                                ORDER BY Name ASC;
+
+                            """, (search_element,))
+                    album_result = curs.fetchone()
+                    # might need a for loop to loop through everything in results
+                    if album_result:
+                        album_id = album_result[0]
+                        album_artist = album_result[1]
+                        album_length = album_result[2]
+                        album_release = album_result[3]
+                        print(
+                            f"Song Name: {search_element}, Artist: {album_artist}, Length: {album_length}, Release Date: {album_release}")
+                    else:
+                        print("Song not found.")
+
+
                 if search_select[0] == "genre":
                     # searches the database for song by genre
+
                     print("searches by genre")
+                    curs.execute("SELECT genreid FROM GENRE WHERE genrename = %s", (search_element,))
+                    result = curs.fetchone()
+
+                    if result:
+                        genreid = result[0]
+                        genre_name = search_element
+                        #Search for a Song that belongs to a genre
+                        curs.execute("SELECT songid FROM song_hasa_genre WHERE genreid = %s",
+                                             (genreid,))
+                        song_ids = curs.fetchall()
+
+                        if song_ids:
+                            for song_id in song_ids:
+                                song_id = song_id[0]  # Extract the value from the tuple
+                                curs.execute(f"SELECT name, artist, releasedate, length FROM SONG WHERE songid = %s  ORDER BY artist {sort_order}",
+                                             (song_id,))
+                                song_info = curs.fetchone()
+
+                                # Search for albumid of said song
+                                curs.execute("SELECT albumid FROM album_hasa_song WHERE songid = %s",
+                                             (song_id,))
+                                song_album_id = curs.fetchone()
+                                 #get the name of said album
+                                curs.execute("SELECT name  FROM ALBUM WHERE albumid = %s ",
+                                             (song_album_id,))
+                                album_genre_name = curs.fetchone()
+
+                                if song_info:
+                                    song_name = song_info[0]
+                                    artist_name = song_info[1]
+                                    release_date = song_info[2]
+                                    length = song_info[3]
+                                if album_genre_name:
+                                    album_gname= album_genre_name[0]
+                                    print(f"Song:{song_name},Artist: {artist_name},Album: {album_gname} , Release Date: { release_date} , Length:{length} ")
+                    else:
+                        print("Genre Not Found")
+
+
                 if search_select[0] == "exit":
                     print("exiting the search!")
                 else:
