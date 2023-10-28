@@ -1,4 +1,3 @@
-
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
@@ -27,85 +26,78 @@ try:
         curs = conn.cursor()
         print("Database connection established")
 
+        # TODO make the search results print in an order
         try:
             print("Search for a song!")
-            print("Search for a song by: \n- name\n- artist\n- album\n-genre")
+            search_select = " "
+            while search_select[0] != "exit":
+                print("Search for a song by: \n- name\n- artist\n- album\n- genre\ntype 'exit' to exit\n")
+                search_select = input()
+                search_select = search_select.strip().split()
+                search_element = ' '.join(map(str, search_select[1:]))  # what is being used to search
+                checker = False
+                if search_select[0] == "name":
 
-             = input("Private? (y/n): ")
-            if p_privacy == 'y':
-                p_privacy = True
-            elif p_privacy == 'n':
-                p_privacy = False
-            p_duration = 0.00
-            p_quantity = 0
+                    # gets songid, artist, and length
+                    curs.execute("""
+                                SELECT S.songid, S.artist, S.length, A.name AS album_name
+                                FROM SONG AS S
+                                LEFT JOIN album_hasa_song AS AH ON S.songid = AH.songid
+                                LEFT JOIN ALBUM AS A ON AH.albumid = A.albumid
+                                WHERE S.name = %s
+                                ORDER BY S.name ASC
+                            """, (search_element,))
 
-            # insert playlist into the table w/ basic info
-            query = "INSERT INTO playlist(playlistid, name, duration, quantity, " \
-                    "isprivate) VALUES (%s, %s, %s, %s, %s)"
-            vals = (p_id, p_name, None, None, p_privacy)
+                    result = curs.fetchone()
+                    # might need a for loop to loop through everything in results
+                    if result:
+                        songid = result[0]
+                        song_artist = result[1]
+                        song_length = result[2]
+                        album_name = result[3]
+                        print(f"Song Name: {search_element}, Artist: {song_artist}, Length: {song_length}, Album: {album_name}")
+                    else:
+                        print("Song not found.")
 
-            curs.execute(query, vals)
+                if search_select[0] == "artist":
+                    # searched the database for song by artist
+                    curs.execute("""
+                                SELECT A.artisid, S.name, S.artist, S.length, A.name AS album_name
+                                FROM ARTIST AS A
+                                LEFT JOIN album_hasa_song AS AH ON S.songid = AH.songid
+                                LEFT JOIN ALBUM AS A ON AH.albumid = A.albumid
+                                WHERE S.name = %s
+                                ORDER BY S.name ASC
+                            """, (search_element,))
+                    curs.execute("""
+                                SELECT S.songid, S.artist, S.length, A.name AS album_name
+                                FROM SONG AS S
+                                LEFT JOIN album_hasa_song AS AH ON S.songid = AH.songid
+                                LEFT JOIN ALBUM AS A ON AH.albumid = A.albumid
+                                WHERE S.name = %s
+                                ORDER BY S.name ASC
+                            """, (search_element,))
 
-            command = ""
-            while command != "done":
-                print(
-                    "type 'add (songname/album)' or 'add (songname/album)' build your "
-                    "playlist. type 'done' to save playlist")
-                command = input()
-                command = command.strip().split()
-                song_name = ' '.join(map(str, command[1:]))
+                if search_select[0] == "album":
+                    # searches the database for song by album
+                    print("searches by album")
+                if search_select[0] == "genre":
+                    # searches the database for song by genre
+                    print("searches by genre")
+                if search_select[0] == "exit":
+                    print("exiting the search!")
+                else:
+                    print("in`valid search option, try again")
+                # if checker:
+                #     print_query = """
+                #                         SELECT title, artist FROM SONG
+                #                         WHERE songid IN (
+                #                             SELECT songid FROM playlist_has_song
+                #                             WHERE playlistid = %s
+                #                         )
+                #                     """
+                #     curs.execute(print_query, (p_id,))
 
-                # get songid and duplicate
-                curs.execute("SELECT songid, duration FROM SONG WHERE title = "
-                             "%s",
-                             (song_name,))
-                songid = curs.fetchone()[0]
-                songdur = curs.fetchone()[1]
-
-                if command[0] == "add":
-                    # TODO: add entire albums
-
-                    add_query = "INSERT INTO playlist_has_song(playlistid, " \
-                                "songid) VALUES (%s, %s)"
-                    vals = (p_id, songid)
-                    curs.execute(add_query, vals)
-                    conn.commit()
-                    p_quantity += 1
-                    p_duration += songdur
-
-                if command[0] == "delete":
-                    # TODO: delete entire albums
-
-                    add_query = "DELETE FROM playlist_has_song" \
-                                "WHERE playlistid = %s AND songid = %s"
-                    vals = (p_id, songid)
-                    curs.execute(add_query, vals)
-                    conn.commit()
-                    p_quantity -= 1
-                    p_duration -= songdur
-
-                # print playlist so far
-                print_query = """
-                    SELECT title, artist FROM SONG
-                    WHERE songid IN ( 
-                        SELECT songid FROM playlist_has_song
-                        WHERE playlistid = %s
-                    )
-                """
-                curs.execute(print_query, (p_id,))
-
-                for row in curs.fetchall():
-                    print(row[0] + " by " + row[1])
-
-                # update duration and quantity of playlist
-                update_playlist_q = "UPDATE playlist " \
-                                    "SET duration = %s" \
-                                    "SET quantity = %s" \
-                                    "WHERE playlist_id = %s"
-                vals = (p_duration, p_quantity, p_id)
-
-            # TODO: build user has playlist relation
-            # jenny needed to commit so she made a comment sry :P
 
         except Exception as e:
             print("db edits failed")
@@ -116,4 +108,4 @@ try:
         conn.close()
 
 except:
-    print("Connection failed")
+    print("Connection failed\n")

@@ -5,10 +5,11 @@ if __name__ == "__main__":
     # run landing login/signup
     subprocess.run([sys.executable, 'landing.py'])
 
-    # run home page
     subprocess.run([sys.executable, 'homepage.py'])
 
 
+    print("Thanks for using Aria no.14!")
 
-
-    print("main finished")
+    # clear program_vars
+    with open('program_vars.py', 'w') as file:
+        pass

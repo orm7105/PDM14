@@ -1,8 +1,11 @@
 import random
+import subprocess
+import sys
 
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
+import program_vars
 import sensitive
 
 username = sensitive.get_user()
@@ -29,44 +32,59 @@ try:
         print("Database connection established")
 
         try:
-            print("Welcome to the homepage")
+            print("\n\n\nWelcome to the Homepage!")
 
-            user_id = 1  # replace with actuasl user ID
-            curs.execute("SELECT userid FROM listeners_listensto_playlist"
-                         "where userid = %s", (user_id,))
-            #if user_id in listeners_listento_playlist:
+            user_id = program_vars.USER_ID
+            action = input("Would you like some info about your playlist (Y/N)?: ").upper()
+            if action == 'Y':
 
-            curs.execute("SELECT playlist_name FROM playlists "
-                         "WHERE userid = %s "
-                         "ORDER BY playlist_name ASC", (user_id,))
-            playlists = curs.fetchall()
+                print("Here is some information about the playlist you have:")
 
-            if playlists:
-                print("This is a list of all your playlists by name in ascending order:")
-                for playlist in playlists:
-                    print(playlist[0])
+                query = "SELECT name, quantity, duration FROM playlist " \
+                        "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
+                        "WHERE userid = %s)"
+
+                curs.execute(query, (user_id,))
+
+                playlist = curs.fetchall()
+
+                if playlist is None:
+                    print("You have no playlists")
+
+                for playlist in playlist:
+                    name, quantity, duration = playlist
+                    print(f"Playlist Name: {name}")
+                    print(f"Number of Songs in Playlist: {quantity}")
+                    print(f"Total Duration in Minutes: {duration} minutes")
             else:
-                print("You haven't created any playlists yet.")
+                print("Ok!")
+                conn.commit()
 
-            playlist_id = 1  # replace with actual playlist ID
+                conn.close()
 
-            curs.execute("SELECT quantity, "
-                         "length FROM PLAYLIST WHERE playlist_id = %s", (playlist_id,))
+            command = ""
+            while True:
+                print("\n\n\nWelcome to the Homepage!")
+                print("commands:\n"
+                      "\t make playlist >\n"
+                      "\t search >\n"
+                      "\t edit playlists >\n"
+                      "\t edit following >\n" 
+                      "\t exit >\n")
 
-            result = curs.fetchone(0)
+                command = input(">")
+                if command == "exit":
+                    break
 
-            # get user had playlist function to check if the user even has a playlist
-            if result:
-                print("This is the number of song in your playlist: ", result)
-            else:
-                print("You haven't added any songs yet.")
+                command = command.strip()
 
-            # Collections and their names if user is existing
-            # must show playlist name, num songs in playlist, length of playlist
+                if command == "make playlist":
+                    subprocess.run([sys.executable, 'playlistmaker.py'])
+                elif command == "search":
+                    subprocess.run([sys.executable, 'search_page.py'])
+                elif command == "edit following":
+                    subprocess.run([sys.executable, 'followingpage.py'])
 
-            # Top artists
-            # Users following
-            # Link to create playlist
         except Exception as e:  # debugging purposes
             print("user db changes failed.")
             print(e)
