@@ -42,7 +42,7 @@ try:
 
 
 
-            #DOUBLE CHECK IT WORKS
+            #DOUBLE CHECK IT WORKS WE HAVE TO DOUBLE CHECK + DONT PUT THE - WHEN CHOOSING ORDER
                 checker = False
                 if search_select[0] == "name":
 
