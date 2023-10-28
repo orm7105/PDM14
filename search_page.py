@@ -47,13 +47,13 @@ try:
                 if search_select[0] == "name":
 
                     # gets songid, artist, and length
-                    curs.execute("""
+                    curs.execute(f"""
                                 SELECT S.songid, S.artist, S.length, A.name AS album_name
                                 FROM SONG AS S
                                 LEFT JOIN album_hasa_song AS AH ON S.songid = AH.songid
                                 LEFT JOIN ALBUM AS A ON AH.albumid = A.albumid
                                 WHERE S.name = %s
-                                ORDER BY S.name ASC
+                                ORDER BY S.name {sort_order}
                             """, (search_element,))
 
                     results = curs.fetchall()  # Fetch all matching rows
@@ -77,7 +77,7 @@ try:
                     if result:
                         artistid = result[0]
 
-                        curs.execute("SELECT name, length FROM SONG WHERE artist = %s ORDER BY name ASC", (search_element,))
+                        curs.execute(f"SELECT name, length FROM SONG WHERE artist = %s ORDER BY name  {sort_order}", (search_element,))
                         songs = curs.fetchall()
 
                         if songs:
@@ -109,11 +109,11 @@ try:
                 if search_select[0] == "album":
                     # searches the database for song by album
                     print("searches by album")
-                    curs.execute("""
+                    curs.execute(f"""
                                 SELECT name, artist, length, releasedate
                                 FROM ALBUM
                                 WHERE Name = %s
-                                ORDER BY Name ASC;
+                                ORDER BY artist {sort_order};
 
                             """, (search_element,))
                     album_result = curs.fetchone()
