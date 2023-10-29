@@ -1,7 +1,6 @@
-import random
+
 import subprocess
 import sys
-
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
@@ -32,13 +31,14 @@ try:
         print("Database connection established")
 
         try:
-            print("\n\n\nWelcome to the Homepage!")
+            print("Welcome to the homepage")
 
             user_id = program_vars.USER_ID
             action = input("Would you like some info about your playlist (Y/N)?: ").upper()
             if action == 'Y':
 
                 print("Here is some information about the playlist you have:")
+
 
                 query = "SELECT name, quantity, duration FROM playlist " \
                         "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
@@ -56,35 +56,20 @@ try:
                     print(f"Playlist Name: {name}")
                     print(f"Number of Songs in Playlist: {quantity}")
                     print(f"Total Duration in Minutes: {duration} minutes")
+
+
             else:
                 print("Ok!")
                 conn.commit()
 
                 conn.close()
+            # Collections and their names if user is existing
+            # must show playlist name, num songs in playlist, length of playlist
 
-            command = ""
-            while True:
-                print("\n\n\nWelcome to the Homepage!")
-                print("commands:\n"
-                      "\t make playlist >\n"
-                      "\t search >\n"
-                      "\t edit playlists >\n"
-                      "\t edit following >\n" 
-                      "\t exit >\n")
 
-                command = input(">")
-                if command == "exit":
-                    break
-
-                command = command.strip()
-
-                if command == "make playlist":
-                    subprocess.run([sys.executable, 'playlistmaker.py'])
-                elif command == "search":
-                    subprocess.run([sys.executable, 'search_page.py'])
-                elif command == "edit following":
-                    subprocess.run([sys.executable, 'followingpage.py'])
-
+            # Top artists
+            # Users following
+            # Link to create playlist
         except Exception as e:  # debugging purposes
             print("user db changes failed.")
             print(e)
