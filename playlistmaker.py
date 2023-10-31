@@ -182,8 +182,8 @@ try:
             # build user has playlist relation
             user_id = program_vars.USER_ID
             user_query = "INSERT INTO listeners_listensto_playlist(userid," \
-                         "playlistid) VALUES (%s, %s)"
-            vals = (user_id, p_id)
+                         "playlistid, creator) VALUES (%s, %s, %s)"
+            vals = (user_id, p_id, user_id)
             curs.execute(user_query, vals)
             conn.commit()
 
