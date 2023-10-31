@@ -51,19 +51,18 @@ def play_playlist(listener_id, playlist_id):
         play_song(listener_id, song_id[0])
 
 
-def count_song_played(listener_id, song_id):
+def count_song_played(song_id):
     """
-    count_song_played() - Counts the amount of time a song has been played by a user;
+    count_song_played() - Counts the amount of time a song has been played in total;
         derived from the listeners_listensto_song table
-    :param listener_id: the userid
     :param song_id: the songid
     :return (int) the amount of times a user has played a song
     """
     # Query and Query Execution
     query = "SELECT COUNT(date_time) " \
             "FROM listeners_listensto_song " \
-            "WHERE userid = %s AND songid = %s"
-    vals = (listener_id, song_id)
+            "WHERE songid = %s"
+    vals = (song_id,)
     curs.execute(query, vals)
 
     count = curs.fetchone()
@@ -120,10 +119,6 @@ try:
                     else:
                         play_song(listener_id, song_id[0])
                         print("Song played successfully!")
-
-                        # Tells user how many times you have play this specific song
-                        count = count_song_played(listener_id, song_id[0])
-                        print("You have played this song " + str(count[0]) + " amount of time(s)!")
 
                 # Play Playlist
                 elif user_input.lower() == 'p' or user_input.lower() == "playlist":
