@@ -7,22 +7,15 @@ username = sensitive.get_user()
 password = sensitive.get_pass()
 dbName = "p320_14"
 
-def count_song_played(song_id):
-    """
-    count_song_played() - Counts the amount of time a song has been played in total;
-        derived from the listeners_listensto_song table
-    :param song_id: the songid
-    :return (int) the amount of times a user has played a song
-    """
-    # Query and Query Execution
-    query = "SELECT COUNT(date_time) " \
-            "FROM listeners_listensto_song " \
-            "WHERE songid = %s"
-    vals = (song_id,)
-    curs.execute(query, vals)
 
-    count = curs.fetchone()
-    return count
+# Function to sort and print song records
+def sort_and_print(song_info, key_index, reverse_order):
+    song_info_sorted = sorted(song_info, key=lambda x: x[key_index], reverse=reverse_order)
+    for song_record in song_info_sorted:
+        song_name, artist_name, album_name, release_date, length = song_record
+        print(
+            f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release_date}, Length: {length}")
+
 
 try:
     with SSHTunnelForwarder(('starbug.cs.rit.edu', 22),
@@ -52,40 +45,39 @@ try:
                 search_select = input()
                 search_select = search_select.strip().split()
                 search_element = ' '.join(map(str, search_select[1:]))  # what is being used to search
+                tempList =[]
                 if search_select[0] == "exit":
                     print("exiting the search!")
                     break
-
-                print("Sort Ascending or Descending: - ASC - DESC ")
-                sort = input()
-                user_order = sort.strip().split()
-                sort_order = user_order[0]
 
                 if search_select[0] == "name":
 
                     # gets songid, artist, and length
                     curs.execute(f"""
-                                SELECT S.songid, S.artist, S.length, A.name AS album_name
+                                SELECT S.songid, S.artist,S.releasedate ,S.length, A.name AS album_name
                                 FROM SONG AS S
                                 LEFT JOIN album_hasa_song AS AH ON S.songid = AH.songid
                                 LEFT JOIN ALBUM AS A ON AH.albumid = A.albumid
                                 WHERE S.name = %s
-                                ORDER BY S.artist {sort_order}
+                                ORDER BY S.name ASC, S.artist ASC;
                             """, (search_element,))
 
                     results = curs.fetchall()  # Fetch all matching rows
+                    tempList = results
 
                     if results:
                         for result in results:
                             songid = result[0]
                             song_artist = result[1]
-                            song_length = result[2]
-                            album_name = result[3]
-                            song_count = count_song_played(songid)
+                            song_release = result[2]
+                            song_length = result[3]
+                            album_name = result[4]
                             print(
-                                f"Song Name: {search_element}, Artist: {song_artist}, Length: {song_length}, Album: {album_name}, Listen Count: {song_count}")
+                                f"Song Name: {songid}, Artist: {song_artist},Album: {album_name},Release Date:{song_release}, Length: {song_length}, ")
                     else:
                         print("Song not found.")
+
+
 
                 elif search_select[0] == "artist":
                     curs.execute("SELECT artistid FROM ARTIST WHERE name = %s", (search_element,))
@@ -94,7 +86,7 @@ try:
                     if result:
                         artistid = result[0]
 
-                        curs.execute(f"SELECT name, length, songid FROM SONG WHERE artist = %s ORDER BY name  {sort_order}",
+                        curs.execute(f"SELECT name, length FROM SONG WHERE artist = %s ORDER BY name ASC",
                                      (search_element,))
                         songs = curs.fetchall()
 
@@ -104,7 +96,6 @@ try:
                             for song in songs:
                                 song_name = song[0]
                                 song_length = song[1]
-                                songid = song[2]
 
                                 curs.execute("SELECT albumid FROM artist_releasesa_album WHERE artistid = %s",
                                              (artistid,))
@@ -118,13 +109,14 @@ try:
 
                                     if result:
                                         album_name = result[0]
-                                        song_count = count_song_played(songid)
                                         print(
-                                            f"Song Name: {song_name}, Artist: {artist_name}, Length: {song_length}, Album: {album_name}, Listen Count: {song_count}")
+                                            f"Song Name: {song_name}, Artist: {artist_name}, Album: {album_name},Length: {song_length}")
                         else:
                             print("No songs found for the artist.")
                     else:
                         print("Artist not found.")
+
+
 
                 if search_select[0] == "album":
                     print("searches by album")
@@ -150,17 +142,17 @@ try:
                                 SELECT name, length
                                 FROM SONG
                                 WHERE songid = %s
-                                ORDER BY length {sort_order};
+                                ORDER BY name ASC;
                             """, (songid,))
                             result = curs.fetchone()
                             if result:
                                 song_name = result[0]
                                 song_length = result[1]
-                                song_count = count_song_played(songid)
                                 print(
-                                    f"Album Name: {search_element}, Song: {song_name}, Artist: {album_artist}, Length: {song_length}, Listen Count: {song_count}")
+                                    f"Song: {song_name}, Artist: {album_artist}, Album Name: {search_element}, Length: {song_length}")
                     else:
                         print("Song not found.")
+
 
                 if search_select[0] == "genre":
                     print("searches by genre")
@@ -175,30 +167,43 @@ try:
                         song_ids = curs.fetchall()
                         song_id_list = [row[0] for row in song_ids]
                         if song_ids:
-                            if sort_order == "ASC":
-                                query = """
-                                        SELECT song.name, song.artist, album.name, song.releasedate, song.length, song.songid
+                            query = """
+                                        SELECT song.name, song.artist, album.name, song.releasedate, song.length
                                         FROM song
                                         JOIN album_hasa_song ON song.songid = album_hasa_song.songid
                                         JOIN album ON album_hasa_song.albumid = album.albumid
                                         WHERE song.songid IN %s
                                         ORDER BY song.name ASC;
                                         """
-                            else:
-                                query = """
-                                    SELECT song.name, song.artist, album.name, song.releasedate, song.length, song.songid
-                                    FROM song
-                                    JOIN album_hasa_song ON song.songid = album_hasa_song.songid
-                                    JOIN album ON album_hasa_song.albumid = album.albumid
-                                    WHERE song.songid IN %s
-                                    ORDER BY song.name DESC;
-                                    """
                             curs.execute(query, (tuple(song_id_list),))
                             song_info = curs.fetchall()
+                            tempList = song_info
                             for song_record in song_info:
-                                song_name, artist_name, album_name, release_date, length, songid = song_record
+                                song_name, artist_name, album_name, release_date, length = song_record
                                 print(
-                                    f"Song:{song_name}, Artist:{artist_name}, Album:{album_name}, Release Date:{release_date}, Length:{length}, Listen Count: {count_song_played(songid)}")
+                                    f"Song:{song_name},Album:{album_name}, Artist:{artist_name}, Release Date:{release_date}, Length:{length}")
+                        #songInfo
+
+
+    #Sort based on users input
+
+                print("\nSort by: song name -s , artist’s name -a , genre -g ,and released year -r")
+                sort_input = input().strip()
+                category = sort_input[0]
+
+                print("Sort Ascending or Descending: - ASC - DESC ")
+                sort_order = input().strip()
+                reverse_order = sort_order[0].upper() == 'D'
+
+                if category == 'a':
+                    sort_and_print(tempList, 1, reverse_order)  # Sort by artist name
+                elif category == 's':
+                    sort_and_print(tempList, 0, reverse_order)  # Sort by song name
+                elif category == 'r':
+                    # Filter out records with None release dates
+                    song_info_filtered = [record for record in tempList if record[3] is not None]
+                    sort_and_print(song_info_filtered, 3, reverse_order)  # Sort by release year
+
 
 
         except Exception as e:
