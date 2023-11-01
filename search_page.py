@@ -6,7 +6,7 @@ import sensitive
 username = sensitive.get_user()
 password = sensitive.get_pass()
 dbName = "p320_14"
-#Test to see changes in the file
+#Test to see changes in the file part 2
 def count_song_played(song_id):
     """
     count_song_played() - Counts the amount of time a song has been played in total;
