@@ -89,17 +89,23 @@ try:
 
         # Tries to search up a playlist or song
         try:
+            print("\n\n\n\n")
+            print('''\
+            ┌┬┐┬ ┬┌─┐┬┌─┐  ┌─┐┬  ┌─┐┬ ┬┌─┐┬─┐
+            ││││ │└─┐││    ├─┘│  ├─┤└┬┘├┤ ├┬┘
+            ┴ ┴└─┘└─┘┴└─┘  ┴  ┴─┘┴ ┴ ┴ └─┘┴└─
+            ''')
 
             while True:
                 # UserID
                 listener_id = program_vars.USER_ID
 
-                print("Would you like to play a Song or Playlist?")
+                print("\nWould you like to play a Song or Playlist?")
                 print("Commands:")
                 print("\t- To play a song (s/song)")
                 print("\t- To play a playlist (p/playlist)")
                 print("\t- Type 'exit' to exit")
-                user_input = input()
+                user_input = input(">")
 
                 # Play Song
                 if user_input.lower() == 's' or user_input.lower() == "song":

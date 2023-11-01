@@ -30,6 +30,11 @@ try:
 
         try:
             print("\n\n\n\nYou are currently at the...")
+            print('''\
+            ┌─┐┬  ┌─┐┬ ┬┬  ┬┌─┐┌┬┐  ┌┬┐┌─┐┬┌─┌─┐┬─┐
+            ├─┘│  ├─┤└┬┘│  │└─┐ │   │││├─┤├┴┐├┤ ├┬┘
+            ┴  ┴─┘┴ ┴ ┴ ┴─┘┴└─┘ ┴   ┴ ┴┴ ┴┴ ┴└─┘┴└─
+            ''')
 
             p_id = random.randint(1000000, 9999999)
             p_name = input("Playlist Name: ")
@@ -52,7 +57,7 @@ try:
             command = ""
             while True:
                 print(
-                    "commands:\n"
+                    "\ncommands:\n"
                     "\t add (pick one: song/album) {name}\n"
                     "\t delete (pick one: song/album) {name}\n"
                     "\t done\n")
@@ -170,7 +175,7 @@ try:
                 curs.execute(print_query, (p_id,))
 
                 for row in curs.fetchall():
-                    print(row[0] + " by " + row[1])
+                    print("\t" + row[0] + " by " + row[1])
 
                 # update duration and quantity of playlist
                 update_playlist_q = "UPDATE playlist " \

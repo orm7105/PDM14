@@ -188,13 +188,17 @@ try:
         try:
 
             while True:
-                print("----playlist editor----")
-                print()
-                print("your playlists: \n")
-                print()
+                print("\n\n\n\nYou are currently at the...")
+                print('''\
+                ┌─┐┬  ┌─┐┬ ┬┬  ┬┌─┐┌┬┐  ┌─┐┌┬┐┬┌┬┐┌─┐┬─┐
+                ├─┘│  ├─┤└┬┘│  │└─┐ │   ├┤  │││ │ │ │├┬┘
+                ┴  ┴─┘┴ ┴ ┴ ┴─┘┴└─┘ ┴   └─┘─┴┘┴ ┴ └─┘┴└─
+                ''')
+
                 user_id = program_vars.USER_ID
                 query = "SELECT name, quantity, duration FROM playlist " \
-                        "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
+                        "WHERE playlistid IN (SELECT playlistid FROM " \
+                        "listeners_owns_playlist " \
                         "WHERE userid = %s)"
 
                 curs.execute(query, (user_id,))
@@ -203,17 +207,22 @@ try:
 
                 if playlist is None:
                     print("You have no playlists")
+                else :
+                    print("\n\n-------------")
+                    print("ALL PLAYLISTS")
+                    print("-------------")
+                    for playlist in playlist:
+                        name, quantity, duration = playlist
+                        # print(f"Playlist Name: {name}")
+                        # print(f"Number of Songs in Playlist: {quantity}")
+                        # print(f"Total Duration in Minutes: {duration} minutes")
 
-                for playlist in playlist:
-                    name, quantity, duration = playlist
-                    print(f"Playlist Name: {name}")
-                    print(f"Number of Songs in Playlist: {quantity}")
-                    print(f"Total Duration in Minutes: {duration} minutes")
+                        print(f"\t* {name} | {duration} mins | {quantity} song(s)")
 
                 command = ""
 
                 print(
-                    "commands:\n"
+                    "\ncommands:\n"
                     "\t edit {playlist name}\n"
                     "\t delete {playlist name}\n"
                     "\t done\n")

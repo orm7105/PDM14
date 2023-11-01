@@ -12,7 +12,15 @@ if __name__ == "__main__":
 
 
 
-    print("main finished")
+    print("\t\t\tThanks for using")
+    print("           _____  _____          ")
+    print("     /\   |  __ \|_   _|   /\    ")
+    print("    /  \  | |__) | | |    /  \   ")
+    print("   / /\ \ |  _  /  | |   / /\ \  ")
+    print("  / ____ \| | \ \ _| |_ / ____ \ ")
+    print(" /_/    \_\_|  \_\_____/_/    \_\\")
+    print("                                 ")
+    print("                                 ")
 
     # clear program_vars
     with open('program_vars.py', 'w') as file:
