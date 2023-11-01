@@ -22,7 +22,7 @@ def count_song_played(song_id):
     curs.execute(query, vals)
 
     count = curs.fetchone()
-    return count
+    return count[0]
 
 # Function to sort and print song records
 def sort_and_print(song_info, key_index, reverse_order):
@@ -138,29 +138,29 @@ try:
                 if search_select[0] == "album":
                     print("Searching by album")
                     curs.execute(f"""
-                        SELECT A.Name AS album_name, A.artist AS album_artist, 
-                               S.name AS song_name, S.length, 
-                               COALESCE(count_song_played(S.songid), 0) AS listen_count
+                        SELECT S.name AS song_name, A.artist AS album_artist, A.Name AS album_name, S.length, S.songid
                         FROM ALBUM AS A
                         LEFT JOIN album_hasa_song AS AH ON A.albumid = AH.albumid
                         LEFT JOIN SONG AS S ON AH.songid = S.songid
                         WHERE A.Name = %s
-                        GROUP BY A.Name, A.artist, S.name, S.length
                         ORDER BY S.name ASC;
                     """, (search_element,))
 
                     results = curs.fetchall()
 
-                    for result in results:
-                        album_name = result[0]
-                        album_artist = result[1]
-                        song_name = result[2]
-                        song_length = result[3]
-                        song_count = result[4]
+                    if results:
+                        for result in results:
+                            song_name = result[0]
+                            album_artist = result[1]
+                            album_name = result[2]
+                            song_length = result[3]
+                            songid = result[4]
+                            song_count = count_song_played(songid)
 
-                        print(
-                            f"Song: {song_name}, Artist: {album_artist}, Album Name: {album_name}, Length: {song_length}, Listen Count: {song_count}")
-
+                            print(
+                                f"Song: {song_name}, Artist: {album_artist}, Album Name: {album_name}, Length: {song_length}, Listen Count: {song_count}")
+                    else:
+                        print("Album not found.")
 
                 if search_select[0] == "genre":
                     print("searches by genre")
