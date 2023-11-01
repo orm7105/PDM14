@@ -135,6 +135,7 @@ try:
                     else:
                         print("Artist not found.")
                 # fshdla
+                # fasjfkdlj
                 if search_select[0] == "album":
                     print("Searching by album")
                     curs.execute(f"""
