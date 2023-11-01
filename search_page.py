@@ -28,9 +28,9 @@ def count_song_played(song_id):
 def sort_and_print(song_info, key_index, reverse_order):
     song_info_sorted = sorted(song_info, key=lambda x: x[key_index], reverse=reverse_order)
     for song_record in song_info_sorted:
-        song_name, artist_name, album_name, release_date, length = song_record
+        song_name, artist_name, album_name, release_date, length ,songid = song_record
         print(
-            f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release_date}, Length: {length}")
+            f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release_date}, Length: {length}, Listen Count: {count_song_played(songid)}")
 
 
 try:
@@ -70,7 +70,7 @@ try:
 
                     # gets songid, artist, and length
                     curs.execute(f"""
-                                SELECT S.songid, S.artist,S.releasedate ,S.length, A.name AS album_name
+                                SELECT S.name, S.artist,A.name AS album_name, S.releasedate ,S.length,S.songid
                                 FROM SONG AS S
                                 LEFT JOIN album_hasa_song AS AH ON S.songid = AH.songid
                                 LEFT JOIN ALBUM AS A ON AH.albumid = A.albumid
@@ -83,71 +83,65 @@ try:
 
                     if results:
                         for result in results:
-                            songid = result[0]
+                            songname = result[0]
                             song_artist = result[1]
-                            song_release = result[2]
-                            song_length = result[3]
-                            album_name = result[4]
+                            song_release = result[3]
+                            song_length = result[4]
+                            album_name = result[2]
+                            songid = result[5]
                             song_count = count_song_played(songid)
                             print(
-                                f"Song Name: {songid}, Artist: {song_artist},Album: {album_name},Release Date:{song_release}, Length: {song_length}, Listen Count: {song_count}")
+                                f"Song Name: {songname}, Artist: {song_artist},Album: {album_name}, Release Date:{song_release}, Length: {song_length}, Listen Count: {song_count}")
                     else:
                         print("Song not found.")
 
 
 
                 elif search_select[0] == "artist":
-                    curs.execute("SELECT artistid FROM ARTIST WHERE name = %s", (search_element,))
-                    result = curs.fetchone()
+                    curs.execute("""
+                        SELECT s.name AS song_name, a.name AS artist_name,al.name AS album_name,s.releasedate,s.length,s.songid
+                        FROM SONG s
+                        JOIN ARTIST a ON s.artist = a.name
+                        LEFT JOIN artist_releasesa_album ara ON a.artistid = ara.artistid
+                        LEFT JOIN ALBUM al ON ara.albumid = al.albumid
+                        WHERE a.name = %s
+                        ORDER BY s.name ASC
+                    """, (search_element,))
 
-                    if result:
-                        artistid = result[0]
+                    results = curs.fetchall()
+                    tempList = results
 
-                        curs.execute(f"SELECT name, length, songid FROM SONG WHERE artist = %s ORDER BY name ASC",
-                                     (search_element,))
-                        songs = curs.fetchall()
+                    if results:
+                        for result in results:
+                            song_name = result[0]
+                            song_length = result[4]
+                            songid = result[5]
+                            artist_name = result[1]
+                            album_name = result[2]
+                            release = result[3]
 
-                        if songs:
-                            artist_name = search_element
-
-                            for song in songs:
-                                song_name = song[0]
-                                song_length = song[1]
-                                songid = song[2]
-
-                                curs.execute("SELECT albumid FROM artist_releasesa_album WHERE artistid = %s",
-                                             (artistid,))
-                                result = curs.fetchone()
-
-                                if result:
-                                    albumid = result[0]
-
-                                    curs.execute("SELECT name FROM ALBUM WHERE albumid = %s", (albumid,))
-                                    result = curs.fetchone()
-
-                                    if result:
-                                        album_name = result[0]
-                                        song_count = count_song_played(songid)
-                                        print(
-                                            f"Song Name: {song_name}, Artist: {artist_name}, Album: {album_name}, Length: {song_length}, Listen Count: {song_count}")
-                        else:
-                            print("No songs found for the artist.")
+                            print(
+                                f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Length: {song_length}, Release Date: {release} Listen Count: {count_song_played(songid)}")
                     else:
-                        print("Artist not found.")
+                        print("No songs found for the artist.")
+                else:
+                    print("Artist not found.")
+
                 # fshdla
                 # fasjfkdlj
                 if search_select[0] == "album":
                     print("Searching by album")
                     curs.execute(f"""
-                        SELECT S.name AS song_name, A.artist AS album_artist, A.Name AS album_name, S.length, S.songid
-                        FROM ALBUM AS A
-                        LEFT JOIN album_hasa_song AS AH ON A.albumid = AH.albumid
-                        LEFT JOIN SONG AS S ON AH.songid = S.songid
-                        WHERE A.Name = %s
-                        ORDER BY S.name ASC;
-                    """, (search_element,))
+                                        SELECT S.name AS song_name, A.artist AS album_artist, A.Name AS album_name, S.length,S.releasedate, S.songid
+                                        FROM ALBUM AS A
+                                        LEFT JOIN album_hasa_song AS AH ON A.albumid = AH.albumid
+                                        LEFT JOIN SONG AS S ON AH.songid = S.songid
+                                        WHERE A.Name = %s
+                                        ORDER BY S.name ASC;
+                                    """, (search_element,))
 
                     results = curs.fetchall()
+                    tempList = results
 
                     if results:
                         for result in results:
@@ -155,11 +149,12 @@ try:
                             album_artist = result[1]
                             album_name = result[2]
                             song_length = result[3]
-                            songid = result[4]
+                            song_releasedate = result[4]
+                            songid = result[5]
                             song_count = count_song_played(songid)
 
                             print(
-                                f"Song: {song_name}, Artist: {album_artist}, Album Name: {album_name}, Length: {song_length}, Listen Count: {song_count}")
+                                f"Song: {song_name}, Artist: {album_artist}, Album Name: {album_name}, Length: {song_length},Release Date: {song_releasedate}, Listen Count: {song_count}")
                     else:
                         print("Album not found.")
 
