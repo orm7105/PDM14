@@ -1,6 +1,6 @@
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
-#For Jenny
+#For Jenny plz
 import sensitive
 
 username = sensitive.get_user()
