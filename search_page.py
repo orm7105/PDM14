@@ -134,7 +134,7 @@ try:
                             print("No songs found for the artist.")
                     else:
                         print("Artist not found.")
-
+                # fshdla
                 if search_select[0] == "album":
                     print("Searching by album")
                     curs.execute(f"""
