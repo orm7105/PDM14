@@ -6,7 +6,7 @@ import sensitive
 username = sensitive.get_user()
 password = sensitive.get_pass()
 dbName = "p320_14"
-
+genre = []
 
 # Test to see changes in the file
 def count_song_played(song_id):
@@ -33,7 +33,7 @@ def sort_and_print(song_info, key_index, reverse_order):
     for song_record in song_info_sorted:
         song_name, artist_name, album_name, release_date, length, songid = song_record
         print(
-            f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release_date}, Length: {length}, Listen Count: {count_song_played(songid)}")
+            f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release_date}, Length: {length}, Listen Count: {count_song_played(songid)}, Genre:{genre} ")
 
 
 try:
@@ -108,6 +108,8 @@ try:
                                     """, (g,))
                             genretype = curs.fetchone()
                             g = genretype[0]
+                            genre = g
+
                             print(
                                 f"Song Name: {songname}, Artist: {song_artist},Album: {album_name}, Release Date:{song_release}, Length: {song_length}, Listen Count: {song_count}, Genre: {g}")
                     else:
@@ -152,6 +154,7 @@ try:
                                     """, (g,))
                             genretype = curs.fetchone()
                             g = genretype[0]
+                            genre = g
                             print(
                                 f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Length: {song_length}, Release Date: {release} Listen Count: {count_song_played(songid)}, Genre: {g}")
                     else:
@@ -199,6 +202,7 @@ try:
                                     """, (g,))
                             genretype = curs.fetchone()
                             g = genretype[0]
+                            genre = g
                             print(
                                 f"Song: {song_name}, Artist: {album_artist}, Album Name: {album_name}, Length: {song_length},Release Date: {song_releasedate}, Listen Count: {song_count}, Genre: {g}")
                     else:
@@ -231,6 +235,7 @@ try:
                             tempList = song_info
                             for song_record in song_info:
                                 song_name, artist_name, album_name, release_date, length, songid = song_record
+                                genre = search_element
                                 print(
                                     f"Song:{song_name},Album:{album_name}, Artist:{artist_name}, Release Date:{release_date}, Length:{length}, Listen Count: {count_song_played(songid)} Genre: {search_element}")
                         # songInfo
@@ -308,6 +313,7 @@ try:
                                         """, (g,))
                                 genretype = curs.fetchone()
                                 g = genretype[0]
+                                genre = g
                                 song_count = count_song_played(songid)
                                 print(
                                     f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}, Genre: {g}")
