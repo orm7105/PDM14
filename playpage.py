@@ -66,7 +66,7 @@ def count_song_played(song_id):
     curs.execute(query, vals)
 
     count = curs.fetchone()
-    return count
+    return count[0]
 
 
 # Tries to connect to Server
@@ -96,8 +96,11 @@ try:
                 # UserID
                 listener_id = program_vars.USER_ID
 
-                print("Would you like to play a Song or Playlist (s/song/p/playlist)?")
-                print("Type 'exit' to exit")
+                print("Would you like to play a Song or Playlist?")
+                print("Commands:")
+                print("\t- To play a song (s/song)")
+                print("\t- To play a playlist (p/playlist)")
+                print("\t- Type 'exit' to exit")
                 user_input = input()
 
                 # Play Song
