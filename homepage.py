@@ -1,7 +1,6 @@
 import random
 import subprocess
 import sys
-
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 

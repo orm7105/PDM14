@@ -1,6 +1,6 @@
 import datetime
 import random
-
+#Testing sryy guys :(
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
                 existing_user = input("Existing user? (y/n): ")
                 u_email = input("Email: ")
                 u_pass = input("Password: ")
-                current_date = datetime.datetime.now().isoformat()
+                current_date = datetime.date.today().isoformat()
 
                 if existing_user == 'n':
                     first_name = input("First name: ")

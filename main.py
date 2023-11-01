@@ -7,8 +7,10 @@ if __name__ == "__main__":
 
     subprocess.run([sys.executable, 'homepage.py'])
 
+    subprocess.run([sys.executable, 'followingpage.py'])
 
-    print("Thanks for using Aria no.14!")
+
+    print("main finished")
 
     # clear program_vars
     with open('program_vars.py', 'w') as file:
