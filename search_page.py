@@ -135,43 +135,31 @@ try:
                     else:
                         print("Artist not found.")
 
-
-
                 if search_select[0] == "album":
-                    print("searches by album")
+                    print("Searching by album")
                     curs.execute(f"""
-                                SELECT albumid, artist 
-                                FROM ALBUM
-                                WHERE Name = %s
-                            """, (search_element,))
-                    album_result = curs.fetchone()
+                        SELECT A.Name AS album_name, A.artist AS album_artist, 
+                               S.name AS song_name, S.length, 
+                               COALESCE(count_song_played(S.songid), 0) AS listen_count
+                        FROM ALBUM AS A
+                        LEFT JOIN album_hasa_song AS AH ON A.albumid = AH.albumid
+                        LEFT JOIN SONG AS S ON AH.songid = S.songid
+                        WHERE A.Name = %s
+                        GROUP BY A.Name, A.artist, S.name, S.length
+                        ORDER BY S.name ASC;
+                    """, (search_element,))
 
-                    if album_result:
-                        album_id = album_result[0]
-                        album_artist = album_result[1]
+                    results = curs.fetchall()
 
-                        curs.execute(f"""
-                            SELECT songid
-                            FROM album_hasa_song
-                            WHERE albumid = %s
-                        """, (album_id,))
-                        result = curs.fetchall()
-                        for songid in result:
-                            curs.execute(f"""
-                                SELECT name, length
-                                FROM SONG
-                                WHERE songid = %s
-                                ORDER BY name ASC;
-                            """, (songid,))
-                            result = curs.fetchone()
-                            if result:
-                                song_name = result[0]
-                                song_length = result[1]
-                                song_count = count_song_played(songid)
-                                print(
-                                    f"Song: {song_name}, Artist: {album_artist}, Album Name: {search_element}, Length: {song_length}, Listen Count: {song_count}")
-                    else:
-                        print("Song not found.")
+                    for result in results:
+                        album_name = result[0]
+                        album_artist = result[1]
+                        song_name = result[2]
+                        song_length = result[3]
+                        song_count = result[4]
+
+                        print(
+                            f"Song: {song_name}, Artist: {album_artist}, Album Name: {album_name}, Length: {song_length}, Listen Count: {song_count}")
 
 
                 if search_select[0] == "genre":
