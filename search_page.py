@@ -6,7 +6,9 @@ import sensitive
 username = sensitive.get_user()
 password = sensitive.get_pass()
 dbName = "p320_14"
-#Test to see changes in the file part 2
+
+
+# Test to see changes in the file
 def count_song_played(song_id):
     """
     count_song_played() - Counts the amount of time a song has been played in total;
@@ -24,11 +26,12 @@ def count_song_played(song_id):
     count = curs.fetchone()
     return count[0]
 
+
 # Function to sort and print song records
 def sort_and_print(song_info, key_index, reverse_order):
     song_info_sorted = sorted(song_info, key=lambda x: x[key_index], reverse=reverse_order)
     for song_record in song_info_sorted:
-        song_name, artist_name, album_name, release_date, length ,songid = song_record
+        song_name, artist_name, album_name, release_date, length, songid = song_record
         print(
             f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release_date}, Length: {length}, Listen Count: {count_song_played(songid)}")
 
@@ -61,12 +64,13 @@ try:
                 search_select = input()
                 search_select = search_select.strip().split()
                 search_element = ' '.join(map(str, search_select[1:]))  # what is being used to search
-                tempList =[]
+                tempList = []
                 if search_select[0] == "exit":
                     print("exiting the search!")
                     break
 
                 if search_select[0] == "name":
+                    genre_checker = 0
 
                     # gets songid, artist, and length
                     curs.execute(f"""
@@ -98,6 +102,7 @@ try:
 
 
                 elif search_select[0] == "artist":
+                    genre_checker = 1
                     curs.execute("""
                         SELECT s.name AS song_name, a.name AS artist_name,al.name AS album_name,s.releasedate,s.length,s.songid
                         FROM SONG s
@@ -130,6 +135,7 @@ try:
                 # fshdla
                 # fasjfkdlj
                 if search_select[0] == "album":
+                    genre_checker = 2
                     print("Searching by album")
                     curs.execute(f"""
                                         SELECT S.name AS song_name, A.artist AS album_artist, A.Name AS album_name, S.length,S.releasedate, S.songid
@@ -159,6 +165,7 @@ try:
                         print("Album not found.")
 
                 if search_select[0] == "genre":
+                    genre_checker = 3
                     print("searches by genre")
                     curs.execute("SELECT genreid FROM GENRE WHERE genrename = %s", (search_element,))
                     result = curs.fetchone()
@@ -186,10 +193,9 @@ try:
                                 song_name, artist_name, album_name, release_date, length, songid = song_record
                                 print(
                                     f"Song:{song_name},Album:{album_name}, Artist:{artist_name}, Release Date:{release_date}, Length:{length}, Listen Count: {count_song_played(songid)}")
-                        #songInfo
+                        # songInfo
 
-
-    #Sort based on users input
+                # Sort based on users input
 
                 print("\nSort by: song name -s , artist’s name -a , genre -g ,and released year -r")
                 sort_input = input().strip()
@@ -207,6 +213,190 @@ try:
                     # Filter out records with None release dates
                     song_info_filtered = [record for record in tempList if record[3] is not None]
                     sort_and_print(song_info_filtered, 3, reverse_order)  # Sort by release year
+                elif category == 'g':
+                    if genre_checker == 0:
+                        curs.execute("""
+                            SELECT
+                                S.name AS song_name,
+                                A.name AS artist_name,
+                                AL.name AS album_name,
+                                S.releasedate,
+                                S.length,
+                                S.songid
+                            FROM
+                                SONG AS S
+                            JOIN
+                                song_hasa_genre AS SHG ON S.songid = SHG.songid
+                            JOIN
+                                GENRE AS G ON SHG.genreid = G.genreid
+                            JOIN
+                                ARTIST AS A ON S.artist = A.name
+                            LEFT JOIN
+                                album_hasa_song AS AH ON S.songid = AH.songid
+                            LEFT JOIN
+                                ALBUM AS AL ON AH.albumid = AL.albumid
+                            WHERE
+                                S.name = %s
+                            ORDER BY
+                                G.genrename {0},
+                                S.name {1};
+                        """.format("ASC" if reverse_order else "DESC", "ASC" if reverse_order else "DESC"),
+                                     (search_element,))
+
+                        results = curs.fetchall()
+                        tempList = results
+
+                        if results:
+                            for result in results:
+                                song_name = result[0]
+                                artist_name = result[1]
+                                album_name = result[2]
+                                release = result[3]
+                                song_length = result[4]
+                                songid = result[5]
+                                song_count = count_song_played(songid)
+                                print(
+                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}")
+                        else:
+                            print("No songs found for the genre.")
+
+                    elif genre_checker == 1:
+                        curs.execute("""
+                            SELECT
+                                S.name AS song_name,
+                                A.name AS artist_name,
+                                AL.name AS album_name,
+                                S.releasedate,
+                                S.length,
+                                S.songid
+                            FROM
+                                SONG AS S
+                            JOIN
+                                song_hasa_genre AS SHG ON S.songid = SHG.songid
+                            JOIN
+                                GENRE AS G ON SHG.genreid = G.genreid
+                            JOIN
+                                ARTIST AS A ON S.artist = A.name
+                            LEFT JOIN
+                                album_hasa_song AS AH ON S.songid = AH.songid
+                            LEFT JOIN
+                                ALBUM AS AL ON AH.albumid = AL.albumid
+                            WHERE
+                                A.name = %s
+                            ORDER BY
+                                G.genrename {0},
+                                S.name {1};
+                        """.format("ASC" if reverse_order else "DESC", "ASC" if reverse_order else "DESC"),
+                                     (search_element,))
+
+                        results = curs.fetchall()
+                        tempList = results
+
+                        if results:
+                            for result in results:
+                                song_name = result[0]
+                                artist_name = result[1]
+                                album_name = result[2]
+                                release = result[3]
+                                song_length = result[4]
+                                songid = result[5]
+                                song_count = count_song_played(songid)
+                                print(
+                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}")
+                        else:
+                            print("No songs found for the genre.")
+
+                    elif genre_checker == 2:
+                        curs.execute("""
+                            SELECT
+                                S.name AS song_name,
+                                A.name AS artist_name,
+                                AL.name AS album_name,
+                                S.releasedate,
+                                S.length,
+                                S.songid
+                            FROM
+                                SONG AS S
+                            JOIN
+                                song_hasa_genre AS SHG ON S.songid = SHG.songid
+                            JOIN
+                                GENRE AS G ON SHG.genreid = G.genreid
+                            JOIN
+                                ARTIST AS A ON S.artist = A.name
+                            LEFT JOIN
+                                album_hasa_song AS AH ON S.songid = AH.songid
+                            LEFT JOIN
+                                ALBUM AS AL ON AH.albumid = AL.albumid
+                            WHERE
+                                AL.name = %s
+                            ORDER BY
+                                G.genrename {0},
+                                S.name {1};
+                        """.format("ASC" if reverse_order else "DESC", "ASC" if reverse_order else "DESC"),
+                                     (search_element,))
+
+                        results = curs.fetchall()
+                        tempList = results
+
+                        if results:
+                            for result in results:
+                                song_name = result[0]
+                                artist_name = result[1]
+                                album_name = result[2]
+                                release = result[3]
+                                song_length = result[4]
+                                songid = result[5]
+                                song_count = count_song_played(songid)
+                                print(
+                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}")
+                        else:
+                            print("No songs found for the genre.")
+
+                    elif genre_checker == 3:
+                        curs.execute("""
+                            SELECT
+                                S.name AS song_name,
+                                A.name AS artist_name,
+                                AL.name AS album_name,
+                                S.releasedate,
+                                S.length,
+                                S.songid
+                            FROM
+                                SONG AS S
+                            JOIN
+                                song_hasa_genre AS SHG ON S.songid = SHG.songid
+                            JOIN
+                                GENRE AS G ON SHG.genreid = G.genreid
+                            JOIN
+                                ARTIST AS A ON S.artist = A.name
+                            LEFT JOIN
+                                album_hasa_song AS AH ON S.songid = AH.songid
+                            LEFT JOIN
+                                ALBUM AS AL ON AH.albumid = AL.albumid
+                            WHERE
+                                G.genrename = %s
+                            ORDER BY
+                                G.genrename {0},
+                                S.name {1};
+                        """.format("ASC" if reverse_order else "DESC", "ASC" if reverse_order else "DESC"),
+                                     (genre_name,))
+
+                        results = curs.fetchall()
+                        tempList = results
+
+                        if results:
+                            for result in results:
+                                song_name = result[0]
+                                artist_name = result[1]
+                                album_name = result[2]
+                                release = result[3]
+                                song_length = result[4]
+                                songid = result[5]
+                                song_count = count_song_played(songid)
+                                print(
+                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}")
+                        else:
+                            print("No songs found for the genre.")
 
 
 
