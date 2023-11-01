@@ -41,7 +41,8 @@ try:
                 print("Here is some information about the playlist you have:")
 
                 query = "SELECT name, quantity, duration FROM playlist " \
-                        "WHERE playlistid IN (SELECT playlistid FROM listeners_listensto_playlist " \
+                        "WHERE playlistid IN (SELECT playlistid FROM " \
+                        "listeners_owns_playlist " \
                         "WHERE userid = %s)"
 
                 curs.execute(query, (user_id,))
@@ -84,6 +85,8 @@ try:
                     subprocess.run([sys.executable, 'search_page.py'])
                 elif command == "edit following":
                     subprocess.run([sys.executable, 'followingpage.py'])
+                elif command == "edit playlists":
+                    subprocess.run([sys.executable, 'playlisteditor.py'])
 
         except Exception as e:  # debugging purposes
             print("user db changes failed.")
