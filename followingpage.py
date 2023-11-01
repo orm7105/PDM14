@@ -58,7 +58,6 @@ try:
                             ssh_password=password,
                             remote_bind_address=('127.0.0.1', 5432)) as server:
         server.start()
-        print("SSH tunnel established")
         params = {
             'database': dbName,
             'user': username,
@@ -69,7 +68,6 @@ try:
 
         conn = psycopg2.connect(**params)
         curs = conn.cursor()
-        print("Database connection established")
 
         # DB work here....
         try:

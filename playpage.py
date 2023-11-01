@@ -66,7 +66,7 @@ def count_song_played(song_id):
     curs.execute(query, vals)
 
     count = curs.fetchone()
-    return count
+    return count[0]
 
 
 # Tries to connect to Server
@@ -76,7 +76,6 @@ try:
                             ssh_password=password,
                             remote_bind_address=('127.0.0.1', 5432)) as server:
         server.start()
-        print("SSH tunnel established")
         params = {
             'database': dbName,
             'user': username,
@@ -87,18 +86,26 @@ try:
 
         conn = psycopg2.connect(**params)
         curs = conn.cursor()
-        print("Database connection established")
 
         # Tries to search up a playlist or song
         try:
+            print("\n\n\n\n")
+            print('''\
+            ┌┬┐┬ ┬┌─┐┬┌─┐  ┌─┐┬  ┌─┐┬ ┬┌─┐┬─┐
+            ││││ │└─┐││    ├─┘│  ├─┤└┬┘├┤ ├┬┘
+            ┴ ┴└─┘└─┘┴└─┘  ┴  ┴─┘┴ ┴ ┴ └─┘┴└─
+            ''')
 
             while True:
                 # UserID
                 listener_id = program_vars.USER_ID
 
-                print("Would you like to play a Song or Playlist (s/song/p/playlist)?")
-                print("Type 'exit' to exit")
-                user_input = input()
+                print("\nWould you like to play a Song or Playlist?")
+                print("Commands:")
+                print("\t- To play a song (s/song)")
+                print("\t- To play a playlist (p/playlist)")
+                print("\t- Type 'exit' to exit")
+                user_input = input(">")
 
                 # Play Song
                 if user_input.lower() == 's' or user_input.lower() == "song":

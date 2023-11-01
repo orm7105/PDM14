@@ -17,7 +17,6 @@ try:
                             ssh_password=password,
                             remote_bind_address=('127.0.0.1', 5432)) as server:
         server.start()
-        print("SSH tunnel established")
         params = {
             'database': dbName,
             'user': username,
@@ -28,10 +27,15 @@ try:
 
         conn = psycopg2.connect(**params)
         curs = conn.cursor()
-        print("Database connection established")
 
         try:
-            print("welcome to the playlist maker!")
+            print("\n\n\n\nYou are currently at the...")
+            print('''\
+            ┌─┐┬  ┌─┐┬ ┬┬  ┬┌─┐┌┬┐  ┌┬┐┌─┐┬┌─┌─┐┬─┐
+            ├─┘│  ├─┤└┬┘│  │└─┐ │   │││├─┤├┴┐├┤ ├┬┘
+            ┴  ┴─┘┴ ┴ ┴ ┴─┘┴└─┘ ┴   ┴ ┴┴ ┴┴ ┴└─┘┴└─
+            ''')
+
             p_id = random.randint(1000000, 9999999)
             p_name = input("Playlist Name: ")
             p_privacy = input("Private? (y/n): ")
@@ -53,7 +57,7 @@ try:
             command = ""
             while True:
                 print(
-                    "commands:\n"
+                    "\ncommands:\n"
                     "\t add (pick one: song/album) {name}\n"
                     "\t delete (pick one: song/album) {name}\n"
                     "\t done\n")
@@ -127,11 +131,12 @@ try:
                         curs.execute(del_query, vals)
                         conn.commit()
 
-                        # update quantity and duration
                         count_query = "SELECT COUNT(albumid) " \
                                       "FROM album_hasa_song " \
                                       "WHERE albumid = %s"
-                        curs.execute(count_query, (album_id,))
+
+
+                        curs.execute(count_query, (p_id, album_id))
                         conn.commit()
 
                         p_quantity -= curs.fetchone()[0]
@@ -158,7 +163,7 @@ try:
                 # print playlist so far
                 print()
                 print(p_name + " | " + str(round(p_duration, 2)) + " mins | " +
-                                           str(p_quantity) + " song(s)")
+                      str(p_quantity) + " song(s)")
                 print("___________________________")
                 print_query = """ 
                     SELECT name, artist FROM SONG
@@ -170,7 +175,7 @@ try:
                 curs.execute(print_query, (p_id,))
 
                 for row in curs.fetchall():
-                    print(row[0] + " by " + row[1])
+                    print("\t" + row[0] + " by " + row[1])
 
                 # update duration and quantity of playlist
                 update_playlist_q = "UPDATE playlist " \
@@ -182,9 +187,9 @@ try:
 
             # build user has playlist relation
             user_id = program_vars.USER_ID
-            user_query = "INSERT INTO listeners_listensto_playlist(userid," \
-                         "playlistid, creator) VALUES (%s, %s, %s)"
-            vals = (user_id, p_id, user_id)
+            user_query = "INSERT INTO listeners_owns_playlist(userid," \
+                         "playlistid) VALUES (%s, %s)"
+            vals = (user_id, p_id)
             curs.execute(user_query, vals)
             conn.commit()
 
