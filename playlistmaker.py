@@ -17,7 +17,6 @@ try:
                             ssh_password=password,
                             remote_bind_address=('127.0.0.1', 5432)) as server:
         server.start()
-        print("SSH tunnel established")
         params = {
             'database': dbName,
             'user': username,
@@ -28,10 +27,10 @@ try:
 
         conn = psycopg2.connect(**params)
         curs = conn.cursor()
-        print("Database connection established")
 
         try:
-            print("welcome to the playlist maker!")
+            print("\n\n\n\nYou are currently at the...")
+
             p_id = random.randint(1000000, 9999999)
             p_name = input("Playlist Name: ")
             p_privacy = input("Private? (y/n): ")

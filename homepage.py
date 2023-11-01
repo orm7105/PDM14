@@ -17,7 +17,6 @@ try:
                             ssh_password=password,
                             remote_bind_address=('127.0.0.1', 5432)) as server:
         server.start()
-        print("SSH tunnel established")
         params = {
             'database': dbName,
             'user': username,
@@ -28,21 +27,35 @@ try:
 
         conn = psycopg2.connect(**params)
         curs = conn.cursor()
-        print("Database connection established")
 
         try:
-            print("\n\n\nWelcome to the Homepage!")
+            print("           _____  _____          ")
+            print("     /\   |  __ \|_   _|   /\    ")
+            print("    /  \  | |__) | | |    /  \   ")
+            print("   / /\ \ |  _  /  | |   / /\ \  ")
+            print("  / ____ \| | \ \ _| |_ / ____ \ ")
+            print(" /_/    \_\_|  \_\_____/_/    \_\\")
+            print("                                 ")
+            print("                                 ")
+
+            print("------------------------")
+            print("┬ ┬┌─┐┌┬┐┌─┐┌─┐┌─┐┌─┐┌─┐")
+            print("├─┤│ ││││├┤ ├─┘├─┤│ ┬├┤ ")
+            print("┴ ┴└─┘┴ ┴└─┘┴  ┴ ┴└─┘└─┘")
+            print("------------------------")
 
             user_id = program_vars.USER_ID
-            action = input("Would you like some info about your playlist (Y/N)?: ").upper()
+            action = input("view all playlists (Y/N)?: ").upper()
             if action == 'Y':
 
-                print("Here is some information about the playlist you have:")
+                print("\n\n-------------")
+                print("ALL PLAYLISTS")
+                print("-------------")
 
                 query = "SELECT name, quantity, duration FROM playlist " \
                         "WHERE playlistid IN (SELECT playlistid FROM " \
                         "listeners_owns_playlist " \
-                        "WHERE userid = %s)"
+                        "WHERE userid = %s) ORDER BY name ASC"
 
                 curs.execute(query, (user_id,))
 
@@ -53,9 +66,10 @@ try:
 
                 for playlist in playlist:
                     name, quantity, duration = playlist
-                    print(f"Playlist Name: {name}")
-                    print(f"Number of Songs in Playlist: {quantity}")
-                    print(f"Total Duration in Minutes: {duration} minutes")
+                    # print(f"Playlist Name: {name}")
+                    # print(f"Number of Songs in Playlist: {quantity}")
+                    # print(f"Total Duration in Minutes: {duration} minutes")
+                    print(f"\t* {name} | {duration} mins | {quantity} song(s)")
             else:
                 print("Ok!")
                 conn.commit()
@@ -64,12 +78,20 @@ try:
 
             command = ""
             while True:
-                print("\n\n\nWelcome to the Homepage!")
+                print("\n\n\n\nYou are currently at the....")
+
+                print("------------------------")
+                print("┬ ┬┌─┐┌┬┐┌─┐┌─┐┌─┐┌─┐┌─┐")
+                print("├─┤│ ││││├┤ ├─┘├─┤│ ┬├┤ ")
+                print("┴ ┴└─┘┴ ┴└─┘┴  ┴ ┴└─┘└─┘")
+                print("------------------------")
+
                 print("commands:\n"
                       "\t make playlist >\n"
                       "\t search >\n"
+                      "\t play music >\n"
                       "\t edit playlists >\n"
-                      "\t edit following >\n" 
+                      "\t edit following >\n"
                       "\t exit >\n")
 
                 command = input(">")
@@ -82,6 +104,8 @@ try:
                     subprocess.run([sys.executable, 'playlistmaker.py'])
                 elif command == "search":
                     subprocess.run([sys.executable, 'search_page.py'])
+                elif command == "play music":
+                    subprocess.run([sys.executable, 'playpage.py'])
                 elif command == "edit following":
                     subprocess.run([sys.executable, 'followingpage.py'])
                 elif command == "edit playlists":
