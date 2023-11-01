@@ -51,23 +51,22 @@ def play_playlist(listener_id, playlist_id):
         play_song(listener_id, song_id[0])
 
 
-def count_song_played(listener_id, song_id):
+def count_song_played(song_id):
     """
-    count_song_played() - Counts the amount of time a song has been played by a user;
+    count_song_played() - Counts the amount of time a song has been played in total;
         derived from the listeners_listensto_song table
-    :param listener_id: the userid
     :param song_id: the songid
     :return (int) the amount of times a user has played a song
     """
     # Query and Query Execution
     query = "SELECT COUNT(date_time) " \
             "FROM listeners_listensto_song " \
-            "WHERE userid = %s AND songid = %s"
-    vals = (listener_id, song_id)
+            "WHERE songid = %s"
+    vals = (song_id,)
     curs.execute(query, vals)
 
     count = curs.fetchone()
-    return count
+    return count[0]
 
 
 # Tries to connect to Server
@@ -77,7 +76,6 @@ try:
                             ssh_password=password,
                             remote_bind_address=('127.0.0.1', 5432)) as server:
         server.start()
-        print("SSH tunnel established")
         params = {
             'database': dbName,
             'user': username,
@@ -88,18 +86,26 @@ try:
 
         conn = psycopg2.connect(**params)
         curs = conn.cursor()
-        print("Database connection established")
 
         # Tries to search up a playlist or song
         try:
+            print("\n\n\n\n")
+            print('''\
+            ┌┬┐┬ ┬┌─┐┬┌─┐  ┌─┐┬  ┌─┐┬ ┬┌─┐┬─┐
+            ││││ │└─┐││    ├─┘│  ├─┤└┬┘├┤ ├┬┘
+            ┴ ┴└─┘└─┘┴└─┘  ┴  ┴─┘┴ ┴ ┴ └─┘┴└─
+            ''')
 
             while True:
                 # UserID
                 listener_id = program_vars.USER_ID
 
-                print("Would you like to play a Song or Playlist (s/song/p/playlist)?")
-                print("Type 'exit' to exit")
-                user_input = input()
+                print("\nWould you like to play a Song or Playlist?")
+                print("Commands:")
+                print("\t- To play a song (s/song)")
+                print("\t- To play a playlist (p/playlist)")
+                print("\t- Type 'exit' to exit")
+                user_input = input(">")
 
                 # Play Song
                 if user_input.lower() == 's' or user_input.lower() == "song":
@@ -120,10 +126,6 @@ try:
                     else:
                         play_song(listener_id, song_id[0])
                         print("Song played successfully!")
-
-                        # Tells user how many times you have play this specific song
-                        count = count_song_played(listener_id, song_id[0])
-                        print("You have played this song " + str(count[0]) + " amount of time(s)!")
 
                 # Play Playlist
                 elif user_input.lower() == 'p' or user_input.lower() == "playlist":

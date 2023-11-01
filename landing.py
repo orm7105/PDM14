@@ -1,6 +1,5 @@
 import datetime
 import random
-#Testing sryy guys :(
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 
@@ -18,7 +17,6 @@ if __name__ == '__main__':
                                 ssh_password=password,
                                 remote_bind_address=('127.0.0.1', 5432)) as server:
             server.start()
-            print("SSH tunnel established")
             params = {
                 'database': dbName,
                 'user': username,
@@ -29,10 +27,21 @@ if __name__ == '__main__':
 
             conn = psycopg2.connect(**params)
             curs = conn.cursor()
-            print("Database connection established")
 
             # DB work here....
             try:
+                print("Welcome to....")
+                print("           _____  _____          ")
+                print("     /\   |  __ \|_   _|   /\    ")
+                print("    /  \  | |__) | | |    /  \   ")
+                print("   / /\ \ |  _  /  | |   / /\ \  ")
+                print("  / ____ \| | \ \ _| |_ / ____ \ ")
+                print(" /_/    \_\_|  \_\_____/_/    \_\\")
+                print("                                 ")
+                print("                                 ")
+
+                print("----------login / sign up--------")
+
                 existing_user = input("Existing user? (y/n): ")
                 u_email = input("Email: ")
                 u_pass = input("Password: ")
