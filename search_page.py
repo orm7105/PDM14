@@ -94,8 +94,22 @@ try:
                             album_name = result[2]
                             songid = result[5]
                             song_count = count_song_played(songid)
+                            curs.execute(f"""
+                                        SELECT genreid
+                                        FROM song_hasa_genre
+                                        WHERE songid = %s;
+                                    """, (songid,))
+                            genretype = curs.fetchone()
+                            g = genretype[0]
+                            curs.execute(f"""
+                                        SELECT genrename
+                                        FROM GENRE
+                                        WHERE genreid = %s;
+                                    """, (g,))
+                            genretype = curs.fetchone()
+                            g = genretype[0]
                             print(
-                                f"Song Name: {songname}, Artist: {song_artist},Album: {album_name}, Release Date:{song_release}, Length: {song_length}, Listen Count: {song_count}")
+                                f"Song Name: {songname}, Artist: {song_artist},Album: {album_name}, Release Date:{song_release}, Length: {song_length}, Listen Count: {song_count}, Genre: {g}")
                     else:
                         print("Song not found.")
 
@@ -124,9 +138,22 @@ try:
                             artist_name = result[1]
                             album_name = result[2]
                             release = result[3]
-
+                            curs.execute(f"""
+                                        SELECT genreid
+                                        FROM song_hasa_genre
+                                        WHERE songid = %s;
+                                    """, (songid,))
+                            genretype = curs.fetchone()
+                            g = genretype[0]
+                            curs.execute(f"""
+                                        SELECT genrename
+                                        FROM GENRE
+                                        WHERE genreid = %s;
+                                    """, (g,))
+                            genretype = curs.fetchone()
+                            g = genretype[0]
                             print(
-                                f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Length: {song_length}, Release Date: {release} Listen Count: {count_song_played(songid)}")
+                                f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Length: {song_length}, Release Date: {release} Listen Count: {count_song_played(songid)}, Genre: {g}")
                     else:
                         print("No songs found for the artist.")
                 else:
@@ -158,9 +185,22 @@ try:
                             song_releasedate = result[4]
                             songid = result[5]
                             song_count = count_song_played(songid)
-
+                            curs.execute(f"""
+                                        SELECT genreid
+                                        FROM song_hasa_genre
+                                        WHERE songid = %s;
+                                    """, (songid,))
+                            genretype = curs.fetchone()
+                            g = genretype[0]
+                            curs.execute(f"""
+                                        SELECT genrename
+                                        FROM GENRE
+                                        WHERE genreid = %s;
+                                    """, (g,))
+                            genretype = curs.fetchone()
+                            g = genretype[0]
                             print(
-                                f"Song: {song_name}, Artist: {album_artist}, Album Name: {album_name}, Length: {song_length},Release Date: {song_releasedate}, Listen Count: {song_count}")
+                                f"Song: {song_name}, Artist: {album_artist}, Album Name: {album_name}, Length: {song_length},Release Date: {song_releasedate}, Listen Count: {song_count}, Genre: {g}")
                     else:
                         print("Album not found.")
 
@@ -192,7 +232,7 @@ try:
                             for song_record in song_info:
                                 song_name, artist_name, album_name, release_date, length, songid = song_record
                                 print(
-                                    f"Song:{song_name},Album:{album_name}, Artist:{artist_name}, Release Date:{release_date}, Length:{length}, Listen Count: {count_song_played(songid)}")
+                                    f"Song:{song_name},Album:{album_name}, Artist:{artist_name}, Release Date:{release_date}, Length:{length}, Listen Count: {count_song_played(songid)} Genre: {search_element}")
                         # songInfo
 
                 # Sort based on users input
@@ -254,9 +294,23 @@ try:
                                 release = result[3]
                                 song_length = result[4]
                                 songid = result[5]
+                                curs.execute(f"""
+                                            SELECT genreid
+                                            FROM song_hasa_genre
+                                            WHERE songid = %s;
+                                        """, (songid,))
+                                genretype = curs.fetchone()
+                                g = genretype[0]
+                                curs.execute(f"""
+                                            SELECT genrename
+                                            FROM GENRE
+                                            WHERE genreid = %s;
+                                        """, (g,))
+                                genretype = curs.fetchone()
+                                g = genretype[0]
                                 song_count = count_song_played(songid)
                                 print(
-                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}")
+                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}, Genre: {g}")
                         else:
                             print("No songs found for the genre.")
 
@@ -301,8 +355,22 @@ try:
                                 song_length = result[4]
                                 songid = result[5]
                                 song_count = count_song_played(songid)
+                                curs.execute(f"""
+                                            SELECT genreid
+                                            FROM song_hasa_genre
+                                            WHERE songid = %s;
+                                        """, (songid,))
+                                genretype = curs.fetchone()
+                                g = genretype[0]
+                                curs.execute(f"""
+                                            SELECT genrename
+                                            FROM GENRE
+                                            WHERE genreid = %s;
+                                        """, (g,))
+                                genretype = curs.fetchone()
+                                g = genretype[0]
                                 print(
-                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}")
+                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}, Genre: {g}")
                         else:
                             print("No songs found for the genre.")
 
@@ -346,9 +414,23 @@ try:
                                 release = result[3]
                                 song_length = result[4]
                                 songid = result[5]
+                                curs.execute(f"""
+                                            SELECT genreid
+                                            FROM song_hasa_genre
+                                            WHERE songid = %s;
+                                        """, (songid,))
+                                genretype = curs.fetchone()
+                                g = genretype[0]
+                                curs.execute(f"""
+                                            SELECT genrename
+                                            FROM GENRE
+                                            WHERE genreid = %s;
+                                        """, (g,))
+                                genretype = curs.fetchone()
+                                g = genretype[0]
                                 song_count = count_song_played(songid)
                                 print(
-                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}")
+                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}, Genre: {g}")
                         else:
                             print("No songs found for the genre.")
 
@@ -393,8 +475,22 @@ try:
                                 song_length = result[4]
                                 songid = result[5]
                                 song_count = count_song_played(songid)
+                                curs.execute(f"""
+                                            SELECT genreid
+                                            FROM song_hasa_genre
+                                            WHERE songid = %s;
+                                        """, (songid,))
+                                genretype = curs.fetchone()
+                                g = genretype[0]
+                                curs.execute(f"""
+                                            SELECT genrename
+                                            FROM GENRE
+                                            WHERE genreid = %s;
+                                        """, (g,))
+                                genretype = curs.fetchone()
+                                g = genretype[0]
                                 print(
-                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}")
+                                    f"Song: {song_name}, Artist: {artist_name}, Album: {album_name}, Release Date: {release}, Length: {song_length}, Listen Count: {song_count}, Genre: {g}")
                         else:
                             print("No songs found for the genre.")
 
