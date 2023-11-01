@@ -7,6 +7,22 @@ username = sensitive.get_user()
 password = sensitive.get_pass()
 dbName = "p320_14"
 
+def count_song_played(song_id):
+    """
+    count_song_played() - Counts the amount of time a song has been played in total;
+        derived from the listeners_listensto_song table
+    :param song_id: the songid
+    :return (int) the amount of times a user has played a song
+    """
+    # Query and Query Execution
+    query = "SELECT COUNT(date_time) " \
+            "FROM listeners_listensto_song " \
+            "WHERE songid = %s"
+    vals = (song_id,)
+    curs.execute(query, vals)
+
+    count = curs.fetchone()
+    return count
 
 # Function to sort and print song records
 def sort_and_print(song_info, key_index, reverse_order):
@@ -72,8 +88,9 @@ try:
                             song_release = result[2]
                             song_length = result[3]
                             album_name = result[4]
+                            song_count = count_song_played(songid)
                             print(
-                                f"Song Name: {songid}, Artist: {song_artist},Album: {album_name},Release Date:{song_release}, Length: {song_length}, ")
+                                f"Song Name: {songid}, Artist: {song_artist},Album: {album_name},Release Date:{song_release}, Length: {song_length}, Listen Count: {song_count}")
                     else:
                         print("Song not found.")
 
@@ -86,7 +103,7 @@ try:
                     if result:
                         artistid = result[0]
 
-                        curs.execute(f"SELECT name, length FROM SONG WHERE artist = %s ORDER BY name ASC",
+                        curs.execute(f"SELECT name, length, songid FROM SONG WHERE artist = %s ORDER BY name ASC",
                                      (search_element,))
                         songs = curs.fetchall()
 
@@ -96,6 +113,7 @@ try:
                             for song in songs:
                                 song_name = song[0]
                                 song_length = song[1]
+                                songid = song[2]
 
                                 curs.execute("SELECT albumid FROM artist_releasesa_album WHERE artistid = %s",
                                              (artistid,))
@@ -109,8 +127,9 @@ try:
 
                                     if result:
                                         album_name = result[0]
+                                        song_count = count_song_played(songid)
                                         print(
-                                            f"Song Name: {song_name}, Artist: {artist_name}, Album: {album_name},Length: {song_length}")
+                                            f"Song Name: {song_name}, Artist: {artist_name}, Album: {album_name}, Length: {song_length}, Listen Count: {song_count}")
                         else:
                             print("No songs found for the artist.")
                     else:
@@ -148,8 +167,9 @@ try:
                             if result:
                                 song_name = result[0]
                                 song_length = result[1]
+                                song_count = count_song_played(songid)
                                 print(
-                                    f"Song: {song_name}, Artist: {album_artist}, Album Name: {search_element}, Length: {song_length}")
+                                    f"Song: {song_name}, Artist: {album_artist}, Album Name: {search_element}, Length: {song_length}, Listen Count: {song_count}")
                     else:
                         print("Song not found.")
 
@@ -168,7 +188,7 @@ try:
                         song_id_list = [row[0] for row in song_ids]
                         if song_ids:
                             query = """
-                                        SELECT song.name, song.artist, album.name, song.releasedate, song.length
+                                        SELECT song.name, song.artist, album.name, song.releasedate, song.length, song.songid
                                         FROM song
                                         JOIN album_hasa_song ON song.songid = album_hasa_song.songid
                                         JOIN album ON album_hasa_song.albumid = album.albumid
@@ -179,9 +199,9 @@ try:
                             song_info = curs.fetchall()
                             tempList = song_info
                             for song_record in song_info:
-                                song_name, artist_name, album_name, release_date, length = song_record
+                                song_name, artist_name, album_name, release_date, length, songid = song_record
                                 print(
-                                    f"Song:{song_name},Album:{album_name}, Artist:{artist_name}, Release Date:{release_date}, Length:{length}")
+                                    f"Song:{song_name},Album:{album_name}, Artist:{artist_name}, Release Date:{release_date}, Length:{length}, Listen Count: {count_song_played(songid)}")
                         #songInfo
 
 
