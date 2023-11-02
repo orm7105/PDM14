@@ -58,10 +58,16 @@ try:
 
         # TODO Users can sort the resulting list by song name, artist’s name, genre and released year (ascending and descending)
         try:
-            print("Search for a song!")
+            print("You are currently at the...")
+            print("┌─┐┌─┐┌─┐┬─┐┌─┐┬ ┬")
+            print("└─┐├┤ ├─┤├┬┘│  ├─┤")
+            print("└─┘└─┘┴ ┴┴└─└─┘┴ ┴")
             search_select = " "
             while search_select[0] != "exit":
-                print("Search for a song by: \n- name\n- artist\n- album\n- genre\ntype 'exit' to exit\n")
+                print("\n\ncommands: \n- name {songname} \n- artist {"
+                      "artistname}\n- "
+                      "album {albumname}\n- genre {genrename}\ntype 'exit' to "
+                      "exit\n")
                 search_select = input()
                 search_select = search_select.strip().split()
                 search_element = ' '.join(map(str, search_select[1:]))  # what is being used to search
