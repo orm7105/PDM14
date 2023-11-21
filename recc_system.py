@@ -153,7 +153,7 @@ try:
                         print(name)
 
                 #  For you: Recommend songs to listen to based on your play history (e.g. genre,
-                #  artist) and the play history of similar users
+                #  artist) and [the play history of similar users] - Not finished
 
                 elif user_input[0] == "4":
                     print("For you: Recommend songs to listen to based on your play history\n")
