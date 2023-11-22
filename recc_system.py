@@ -57,8 +57,7 @@ try:
                 current_dt = datetime.now()
                 dt_str = current_dt.strftime("%Y/%m/%d %H:%M:%S")
 
-                user_input = input("Songs based on: \n")
-                print("Enter exit to leave")
+                user_input = input("Songs based on: \n[Enter exit to leave]\n")
                 user_input = user_input.strip().split()
 
                 #The top 50 most popular songs in the last 30 days (rolling)
@@ -76,8 +75,8 @@ try:
                                         art.name, 
                                             (SELECT COUNT(c) 
                                             FROM song AS c 
-                                            INNER JOIN listeners_listensto_song ults ON c.songid = ults.songid 
-                                            WHERE c.songid = s.songid AND ults.date_time >= CURRENT_TIMESTAMP - INTERVAL '30 days')
+                                            INNER JOIN listeners_listensto_song llts ON c.songid = llts.songid 
+                                            WHERE c.songid = s.songid AND llts.date_time >= CURRENT_TIMESTAMP - INTERVAL '30 days')
                                         AS listen_count 
                                     FROM song AS s 
                                     LEFT OUTER JOIN artist_releasesa_song ars ON s.songid = ars.songid 
@@ -153,10 +152,11 @@ try:
                         print(name)
 
                 #  For you: Recommend songs to listen to based on your play history (e.g. genre,
-                #  artist) and [the play history of similar users] - Not finished
+                #  artist) and the play history of similar users
 
                 elif user_input[0] == "4":
                     print("For you: Recommend songs to listen to based on your play history\n")
+                    print("Title        Length         Release Date\n")
                     #Songs based on the top artist the user listens to
                     curs.execute("""
                                 WITH TopArtists AS (
@@ -189,10 +189,15 @@ try:
 
                                  """, (listener_id,))
                     user_history_artist = curs.fetchall()
-                    print(user_history_artist)
+                    for artist in user_history_artist:
+                        UHA_title = artist[0]
+                        UHA_artist = artist[1]
+                        UHA_album= artist[2]
+                        UHA_release = artist[3]
+                        UHA_length = artist[4]
+                        print(UHA_title,", ", UHA_length,", ",UHA_release , "\n")
 
                     #Top 5 Genres based on user history
-
                     curs.execute(""" 
                             WITH TopGenres AS (
                                 SELECT 
@@ -243,8 +248,98 @@ try:
                                 TopGenres AS TG ON G.genreID = TG.genreid
                             LIMIT 10;
                                 """, (listener_id,))
-                    combo = curs.fetchall()
-                    print(combo)
+                    UHG_genre = curs.fetchall()
+
+                    for each_genre in UHG_genre:
+                        UHG_Name = each_genre[0]
+                        UHG_artist= each_genre[1]
+                        UHG_album = each_genre[2]
+                        UHG_release = each_genre[3]
+                        UHG_Length = each_genre[4]
+                        print(UHG_Name, ", ",UHG_Length,", ", UHG_release, "\n")
+
+                  # Find Similar Users:
+                    # 1. They follow you
+                    # 2. You follow them
+                    # 3. They follow at least 2 of the same people that you are following
+                    curs.execute(""" 
+                        SELECT DISTINCT F1.followerid AS common_follower
+                        FROM listeners_follows_user F1
+                        JOIN listeners_follows_user F2 ON F1.followerid = F2.followerid
+                        WHERE F1.followingid = %s
+                        OR F1.followerid <> %s
+                        OR F2.followingid = %s
+                        OR F1.followerid IN (
+                            SELECT DISTINCT followingid
+                            FROM listeners_follows_user
+                            WHERE followerid = %s
+                            GROUP BY followingid
+                            HAVING COUNT(DISTINCT followerid) >= 2
+                        );
+                    """, (listener_id,listener_id, listener_id, listener_id))
+                    UH_similar_users = curs.fetchall()
+                    similar_users = []
+                    for users in UH_similar_users:
+                        similar_users.append(users[0])
+
+
+                    curs.execute("""
+                        WITH TopArtists AS (
+                            SELECT A.name, A.artistid
+                            FROM listeners_listensto_song AS L
+                            INNER JOIN artist_releasesa_song AS RS ON RS.songid = L.songid
+                            INNER JOIN artist AS A ON A.artistid = RS.artistid
+                            WHERE L.userid = ANY(%s)
+                            GROUP BY A.name, A.artistid
+                            LIMIT 10
+                        ),
+                        ArtistListenersCount AS (
+                            SELECT
+                                A.artistid,
+                                COUNT(DISTINCT L.userid) AS listener_count
+                            FROM
+                                listeners_listensto_song AS L
+                            INNER JOIN
+                                artist_releasesa_song AS RS ON RS.songid = L.songid
+                            INNER JOIN
+                                artist AS A ON A.artistid = RS.artistid
+                            WHERE
+                                L.userid = ANY(%s)
+                            GROUP BY
+                                A.artistid
+                        )
+                        SELECT 
+                            s.name AS song_name, 
+                            a.name AS artist_name,
+                            al.name AS album_name,
+                            s.releasedate,
+                            s.length,
+                            s.songid
+                        FROM 
+                            SONG s
+                        JOIN 
+                            ARTIST a ON s.artist = a.name
+                        LEFT JOIN 
+                            artist_releasesa_album ara ON a.artistid = ara.artistid
+                        LEFT JOIN 
+                            ALBUM al ON ara.albumid = al.albumid
+                        WHERE 
+                            a.artistid IN (SELECT artistid FROM TopArtists)
+                        ORDER BY
+                            (SELECT listener_count FROM ArtistListenersCount WHERE artistid = a.artistid) DESC
+                        LIMIT 10;
+                    """, (similar_users, similar_users))
+                    similar_users_artist = curs.fetchall()
+                    for similar in similar_users_artist:
+                        SUA_title = similar[0]
+                        SUA_length = similar[4]
+                        SUA_release = similar[3]
+                        print(SUA_title, ", ", SUA_length, ", ", SUA_release, "\n")
+
+
+
+
+
 
 
 
