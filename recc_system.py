@@ -340,18 +340,6 @@ try:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
                 elif (user_input[0] == "exit"):
                     break
 
