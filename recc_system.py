@@ -83,7 +83,7 @@ try:
                                     LEFT OUTER JOIN artist_releasesa_song ars ON s.songid = ars.songid 
                                     LEFT OUTER JOIN artist art ON ars.artistid = art.artistid)
                                     AS topInfo 
-                                    ORDER BY listen_count ASC 
+                                    ORDER BY listen_count DESC 
                                     LIMIT 50;
                                                  """, (listener_id,))
                     popular_song = curs.fetchall()
