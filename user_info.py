@@ -98,6 +98,12 @@ try:
         print("Database connection established")
 
         try:
+            print("\n\n\n\nYou are currently at the...")
+            print('''\
+                        ┌─┐┬─┐┌─┐┌─┐┬ ┬  ┌─┐  ┌─┐┌─┐┌─┐┌─┐
+                        ├─┘├┬┘│ │├─ │ │  ├┤   ├─┘├─┤│ ┐├┤  
+                        ┴  ┴└─└─┘┴  ┴ ┴─┘└─┘  ┴  ┴ ┴└─┘└─┘
+                        ''')
             # UserID
             listener_id = program_vars.USER_ID
             # gets the first name of the user

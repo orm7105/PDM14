@@ -92,6 +92,8 @@ try:
                       "\t play music >\n"
                       "\t edit playlists >\n"
                       "\t edit following >\n"
+                      "\t view recommendations >\n"
+                      "\t view profile >\n"
                       "\t exit >\n")
 
                 command = input(">")
@@ -110,6 +112,10 @@ try:
                     subprocess.run([sys.executable, 'followingpage.py'])
                 elif command == "edit playlists":
                     subprocess.run([sys.executable, 'playlisteditor.py'])
+                elif command == "view recommendations":
+                    subprocess.run([sys.executable, 'recc_system.py'])
+                elif command == "view profile:":
+                    subprocess.run([sys.executable, 'user_info.py'])
 
         except Exception as e:  # debugging purposes
             print("user db changes failed.")
