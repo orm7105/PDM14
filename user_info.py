@@ -138,7 +138,7 @@ try:
 
             follower_count = curs.fetchone()  # Fetch all matching rows
             follower = follower_count[0]
-            print(f"You have {follower} {'follower' if follower == 1 else 'followers'}!")
+            # print(f"You have {follower} {'follower' if follower == 1 else 'followers'}.")
             # number of people you subscribe to
             # get the count of user id from followerid
             curs.execute(f"""
@@ -149,14 +149,14 @@ try:
 
             following_count = curs.fetchone()  # Fetch all matching rows
             following = following_count[0]
-            print(f"You are following {following} {'user' if following == 1 else 'users'}!\n")
+            print(f"You have {follower} {'follower' if follower == 1 else 'followers'} and you are following {following} {'user' if following == 1 else 'users'}!\n")
 
             method = " "
             while method[0] != "exit":
                 print("Enter {plays} to get your top 10 artist by most plays,\n"
                       "{additions} for your top 10 artist by most additions to playlists, \nor "
-                      "{combination} for both!\n")
-                print("Enter {exit} to exit your profile page!")
+                      "{combination} for both.\n")
+                print("Enter {exit} to exit your profile page.")
                 method = input()
                 method = method.strip().split()
                 if method[0] == "exit":
